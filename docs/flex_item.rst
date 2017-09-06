@@ -46,7 +46,7 @@ FlexFlowable
 ------------
 A simple utility class which empowers a existing Flowable by wrapping it in a FlexItem.
 
-For example a ``FlexParagraph`` can be implemented like so:
+For example a ``FlexParagraph`` which automatically uses half of the avaliable width can be implemented like so:
 
 .. literalinclude:: examples/flex_paragraph.py
     :lines: 6-11
