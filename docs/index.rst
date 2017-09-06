@@ -11,7 +11,7 @@ Table of contents
 .. toctree::
    :maxdepth: 2
 
-   index
+   overview
    quick_start
    flex_item
    flex_box

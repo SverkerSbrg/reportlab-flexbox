@@ -2,7 +2,11 @@
 Welcome to reportlab-flexbox!
 =============================
 
-TODO: Rationale
+---------
+Rationale
+---------
+Lorem ipsum
+
 
 Github
     https://github.com/SverkerSbrg/reportlab-flexbox/
@@ -10,10 +14,10 @@ Github
 Documentation
     http://reportlab-flexbox.readthedocs.io/en/latest/
 
-pypi
+Python package index (pypi)
     https://pypi.python.org/pypi/reportlab-flexbox/
 
-reportlab
+ReportLab
     https://pypi.python.org/pypi/reportlab
 
 
