@@ -48,7 +48,7 @@ A simple utility class which empowers a existing Flowable by wrapping it in a Fl
 
 For example a ``FlexParagraph`` can be implemented like so:
 
-.. literalinclude:: ../flexbox/flex.py
+.. literalinclude:: examples/flex_paragraph.py
     :lines: 6-11
 
 
