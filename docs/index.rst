@@ -3,18 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to reportlab-flexbox's documentation!
-=============================================
+.. include:: ../README:rst
+
+Table of contents
+=================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+   index
+   quick_start
+   flex_item
+   flex_box
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
