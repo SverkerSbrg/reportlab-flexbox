@@ -169,20 +169,37 @@ class _FlexRow(list):
 
         self.flex_direction = flex_direction
 
+        self._width = None
+        self._height = None
+
     @property
     def width(self):
-        return self.flex_direction.width(self)
+        if self._width is None:
+            self._width = self.flex_direction.width(self)
+
+        return self._width
+
+    @width.setter
+    def width(self, value):
+        self._width = value
 
     @property
     def height(self):
-        return self.flex_direction.height(self)
+        if self._height is None:
+            self._height = self.flex_direction.height(self)
+
+        return self._height
+
+    @height.setter
+    def height(self, value):
+        self._height = value
 
 
 class FlexBox(FlexItem):
     flex_direction = FlexDirection.Row
     justify_content = JustifyContent.FlexStart
     align_items = AlignItems.FlexStart
-    align_content = AlignContent.FlexStart
+    align_content = AlignContent.Stretch
     flex_wrap = FlexWrap.Wrap
     keep_together = False
 
@@ -218,7 +235,7 @@ class FlexBox(FlexItem):
         for attr, collection in (
                 ("flex_direction", FlexDirection),
                 ("justify_content", JustifyContent),
-                ("align_content", JustifyContent),
+                ("align_content", AlignContent),
                 ("align_items", AlignItems),
                 ("flex_wrap", FlexWrap),
         ):
@@ -269,6 +286,12 @@ class FlexBox(FlexItem):
         rows = self._rows
 
         if self.flex_direction == FlexDirection.Row:
+            if self.align_content == AlignContent.Stretch:
+                row_height = sum(row.height for row in rows)
+                space = content_height - row_height
+                for row in rows:
+                    row.height += space * row.height/row_height
+
             for row, y in zip(rows, self.align_content.points(rows, content_height, lambda r: r.height)):
                 y = content_height - y
 
@@ -280,6 +303,12 @@ class FlexBox(FlexItem):
                             item, row.height, lambda i: i.height)
                     )
         else:
+            if self.align_content == AlignContent.Stretch:
+                row_width = sum(row.width for row in rows)
+                space = content_width - row_width
+                for row in rows:
+                    row.width += space * row.width/row_width
+
             for row, x in zip(rows, self.align_content.points(rows, content_width, lambda r: r.width)):
                 for item, y in zip(row, self.justify_content.points(self.items, content_height, lambda i: i.height)):
                     item.drawOn(
