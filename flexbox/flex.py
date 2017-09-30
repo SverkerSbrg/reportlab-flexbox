@@ -276,15 +276,15 @@ class FlexBox(FlexItem):
                     item.drawOn(
                         self.canv,
                         x,
-                        y - item.height - (item.align_self or self.align_items).point(item, row.height,
-                                                                                      lambda i: i.height)
+                        y - item.height - (getattr(item, "align_self", None) or self.align_items).point(
+                            item, row.height, lambda i: i.height)
                     )
         else:
             for row, x in zip(rows, self.align_content.points(rows, content_width, lambda r: r.width)):
                 for item, y in zip(row, self.justify_content.points(self.items, content_height, lambda i: i.height)):
                     item.drawOn(
                         self.canv,
-                        x + (item.align_self or self.align_items).point(item, row.width, lambda i: i.width),
+                        x + (getattr(item, "align_self", None) or self.align_items).point(item, row.width, lambda i: i.width),
                         content_height - item.height - y
                     )
 
