@@ -296,12 +296,9 @@ class FlexBox(FlexItem):
                 y = content_height - y
 
                 for item, x in zip(row, self.justify_content.points(self.items, content_width, lambda i: i.width)):
-                    item.drawOn(
-                        self.canv,
-                        x,
-                        y - item.height - (getattr(item, "align_self", None) or self.align_items).point(
-                            item, row.height, lambda i: i.height)
-                    )
+                    item.drawOn(self.canv, x,
+                                y - item.height - (getattr(item, "align_self", None) or self.align_items).point(
+                                    item, row.height, lambda i: i.height), )
         else:
             if self.align_content == AlignContent.Stretch:
                 row_width = sum(row.width for row in rows)
@@ -311,11 +308,10 @@ class FlexBox(FlexItem):
 
             for row, x in zip(rows, self.align_content.points(rows, content_width, lambda r: r.width)):
                 for item, y in zip(row, self.justify_content.points(self.items, content_height, lambda i: i.height)):
-                    item.drawOn(
-                        self.canv,
-                        x + (getattr(item, "align_self", None) or self.align_items).point(item, row.width, lambda i: i.width),
-                        content_height - item.height - y
-                    )
+                    item.drawOn(self.canv,
+                                x + (getattr(item, "align_self", None) or self.align_items).point(item, row.width,
+                                                                                                  lambda i: i.width),
+                                content_height - item.height - y, )
 
     def split(self, avail_width, avail_height):
         if self.keep_together or self.height < avail_height:
@@ -367,11 +363,10 @@ class FlexFlowable(FlexItem):
         return self._flowable_width, self._flowable_height
 
     def draw_content(self, content_width, content_height):
-        self.flowable.drawOn(
-            self.canv,
-            self.vertical_align.point(self.flowable, content_width, lambda i: self._flowable_width),
-            self.horizontal_align.point(self.flowable, content_height, lambda i: self._flowable_height)
-        )
+        self.flowable.drawOn(self.canv,
+                             self.vertical_align.point(self.flowable, content_width, lambda i: self._flowable_width),
+                             self.horizontal_align.point(self.flowable, content_height,
+                                                         lambda i: self._flowable_height), )
 
 
 class FlexParagraph(FlexFlowable):

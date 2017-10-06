@@ -1,11 +1,11 @@
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Flowable
 
-from flexbox import FlexDirection, JustifyContent, AlignItems, FlexWrap
 from flexbox2.measurement import Measurement2Descriptor, FlexMeasurement2, FrameDescriptor
+from flexbox2.options import FlexDirection2, JustifyContent2, AlignItems2, AlignContent2, FlexWrap2, Stretch2
 
 
-class FlexItem(Flowable):
+class FlexItem2(Flowable):
     min_width = Measurement2Descriptor()
     width = Measurement2Descriptor()
     max_width = Measurement2Descriptor()
@@ -22,7 +22,7 @@ class FlexItem(Flowable):
     padding = FrameDescriptor()
 
     def __init__(self, min_width=None, width=None, max_width=None, min_height=None, height=None, max_height=None,
-                 margin=None, border=None, padding=None, background_color=None, border_color=None):
+                 margin=None, border=None, padding=None, background_color=None, border_color=None, align_self=None):
         super().__init__()
         
         self.min_width = min_width
@@ -42,6 +42,8 @@ class FlexItem(Flowable):
 
         self.content_width = None
         self.content_height = None
+
+        self.align_self = align_self
 
     def wrap(self, avail_width, avail_height):
         for measurement in (self.min_width, self.width, self.max_width):
@@ -83,6 +85,11 @@ class FlexItem(Flowable):
         self.width.base = 0
         self.height = height
         self.height.base = 0
+
+        # if type(self).__name__ == "TestBox3":
+        #     print("TestBox3.2")
+        #     print("content:", content_width, content_height)
+        #     print("parent :", width, height)
 
         return width, height
 
@@ -134,72 +141,142 @@ class FlexItem(Flowable):
             self.margin.left + self.padding.left + float(self.border.left),
             self.margin.bottom + self.padding.bottom + float(self.border.bottom)
         )
-        self.draw_content(self.content_width, self.content_height)
+        self.draw_content(
+            self.width - self.margin.width - self.padding.width - self.border.width,
+            self.height - self.margin.height - self.padding.height - self.border.height,
+            self.content_width,
+            self.content_height
+        )
         self.canv.restoreState()
 
-    def draw_content(self, content_width, content_height):
+    def draw_content(self, avail_width, avail_height, requested_width, requested_height):
         pass
 
 
-# class FlexBox(FlexItem):
-#     def __init__(self, *flex_items, flex_direction=None, justify_content=None, align_content=None, align_items=None,
-#                  flex_wrap=None, keep_together=None, **kwargs):
-#         self.items = flex_items
-#
-#         self.flex_direction = flex_direction
-#         self.justify_content = justify_content
-#         self.align_content = align_content
-#         self.align_items = align_items
-#         self.flex_wrap = flex_wrap
-#         self.keep_together = keep_together
-#
-#         self._rows = []
-#
-#         super().__init__(**kwargs)
-#
-#         # Store kwargs for easy duplication in split method.
-#         self._kwargs = kwargs
-#         self._kwargs.update({
-#             "flex_direction": flex_direction,
-#             "justify_content": justify_content,
-#             "align_content": align_content,
-#             "align_items": align_items,
-#             "flex_wrap": flex_wrap,
-#             "keep_together": keep_together
-#         })
-#
-#         self._validate_configuration()
-#
-#     def _validate_configuration(self):
-#         for attr, collection in (
-#                 ("flex_direction", FlexDirection),
-#                 ("justify_content", JustifyContent),
-#                 ("align_content", JustifyContent),
-#                 ("align_items", AlignItems),
-#                 ("flex_wrap", FlexWrap),
-#         ):
-#             value = getattr(self, attr)
-#             if value not in collection:
-#                 raise ValueError("'%s' is not av valid value for %s.%s. Try [%s]" % (
-#                     value, type(self).__name__, attr,
-#                     ", ".join(("%s.%s" % (collection.__name__, item.__name__) for item in collection))
-#                 ))
-#
-#     def wrap_content(self, avail_width, avail_height):
-#         pass
+def widths(items):
+    return tuple(float(getattr(item, "width", 0)) for item in items)
 
 
-class TestItem(FlexItem):
+def heights(items):
+    return tuple(float(getattr(item, "height", 0)) for item in items)
+
+
+class FlexRow(list):
+    width = None
+    height = None
+
+
+class FlexBox2(FlexItem2):
+    def __init__(self, *flex_items, flex_direction=None, justify_content=None, align_content=None, align_items=None,
+                  flex_wrap=None, keep_together=None,  **kwargs):
+
+        self.items = flex_items
+        self.rows = None
+
+        self.flex_direction = flex_direction or FlexDirection2.Row2
+        self.justify_content = justify_content or JustifyContent2.FlexStart
+        self.align_items = align_items or AlignItems2.FlexStart
+        self.align_content = align_content or AlignContent2.Stretch
+        self.flex_wrap = flex_wrap or FlexWrap2.NoWrap2
+        self.keep_together = keep_together if keep_together is not None else False
+
+        super().__init__(**kwargs)
+
+        self._validate_configuration()
+
+    def _validate_configuration(self):
+        for attr, collection in (
+                ("flex_direction", FlexDirection2),
+                ("justify_content", JustifyContent2),
+                ("align_content", AlignContent2),
+                ("align_items", AlignItems2),
+                ("flex_wrap", FlexWrap2),
+        ):
+            value = getattr(self, attr)
+            if value not in collection:
+                raise ValueError("'%s' is not av valid value for %s.%s. Try [%s]" % (
+                    value, type(self).__name__, attr,
+                    ", ".join(("%s.%s" % (collection.__name__, item.__name__) for item in collection))
+                ))
+
+    def wrap_content(self, avail_width, avail_height):
+        for item in self.items:
+            item.wrap(avail_width, avail_height)
+
+        if self.flex_wrap == FlexWrap2.Wrap2:
+            if self.flex_direction == FlexDirection2.Row2:
+                avaliable, lengths = avail_width, widths(self.items)
+            else:
+                avaliable, lengths = avail_height, heights(self.items)
+
+            self.rows = []
+            row = FlexRow()
+            row_length = 0
+            for item, length in zip(self.items, lengths):
+                row_length += length
+                if row_length > avaliable and row:
+                    self.rows.append(row)
+                    row = FlexRow()
+                    row_length = length
+                row.append(item)
+            self.rows.append(row)
+        else:
+            self.rows = [FlexRow(self.items)]
+
+        if self.flex_direction == FlexDirection2.Row2:
+            for row in self.rows:
+                row.width, row.height = sum(widths(row)), max(heights(row))
+
+            content_width, content_height = max(widths(self.rows)), sum(heights(self.rows))
+        else:
+            for row in self.rows:
+                row.width, row.height = max(widths(row)), sum(heights(row))
+
+            content_width, content_height = sum(widths(self.rows)), max(heights(self.rows))
+
+        return content_width, content_height
+
+    def draw_content(self, avail_width, avail_height, requested_width, requested_height):
+        if self.flex_direction == FlexDirection2.Row2:
+            row_heights = heights(self.rows)
+            if self.align_content == AlignContent2.Stretch:
+                row_heights = tuple(AlignContent2.Stretch.stretch(row_heights, avail_height))
+
+            for row, y, row_height in zip(self.rows, self.align_content.points(row_heights, avail_height), row_heights):
+                y = avail_height - y
+                for item, x in zip(row, self.justify_content.points(widths(row), avail_width)):
+                    align_item = getattr(item, "align_self", None) or self.align_items
+
+                    if hasattr(item, "flag"):
+                        print(item, x,  y - float(item.height) - align_item.point(float(item.height), row_height), y, float(item.height), align_item.point(float(item.height), row_height))
+
+                    item.drawOn(
+                        self.canv,
+                        x,
+                        y - float(item.height) - align_item.point(float(item.height), row_height)
+                    )
+        else:
+            col_widths = widths(self.rows)
+            if self.align_content == AlignContent2.Stretch:
+                col_widths = tuple(AlignContent2.Stretch.stretch(col_widths, avail_width))
+            for col, x, col_width in zip(self.rows, self.align_content.points(col_widths, avail_width), col_widths):
+                for item, y in zip(col, self.justify_content.points(heights(col), avail_height)):
+                    align_item = getattr(item, "align_self", None) or self.align_items
+                    item.drawOn(self.canv, x + align_item.point(float(item.width), col_width),
+                                avail_height - float(item.height) - y, )
+
+
+class TestItem(FlexItem2):
     def wrap_content(self, avail_width, avail_height):
         return 100, 100
 
-    def draw_content(self, content_width, content_height):
+    def draw_content(self, avail_width, avail_height, requested_width, requested_height):
         self.canv.setStrokeColor(HexColor(0xFF0000))
-        self.canv.rect(0, 0, content_width, content_height)
+        self.canv.rect(0, 0, requested_width, requested_height)
         self.canv.setLineWidth(10)
-        self.canv.line(0, 0, content_width, content_height)
+        self.canv.line(0, 0, requested_width, requested_height)
 
         self.canv.setStrokeColor(HexColor(0x000000))
         self.canv.setLineWidth(1)
-        self.canv.line(0, 0, content_width, content_height)
+        self.canv.line(0, 0, requested_width, requested_height)
 
