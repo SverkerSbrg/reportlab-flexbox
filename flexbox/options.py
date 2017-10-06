@@ -121,6 +121,10 @@ class SpaceBetween(Fortnum):
                 point += key(item) + space
 
 
+class Stretch(FlexStart):
+    pass
+
+
 class AlignItems(Fortnum):
     FlexStart = FlexStart
     FlexEnd = FlexEnd
@@ -149,6 +153,7 @@ class AlignContent(Fortnum):
     SpaceAround = SpaceAround
     SpaceEvenly = SpaceEvenly
     SpaceBetween = SpaceBetween
+    Stretch = Stretch
 
 
 class FlexWrap(Fortnum):

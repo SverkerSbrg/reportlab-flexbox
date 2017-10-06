@@ -87,7 +87,7 @@ def demo():
                         background_color=container_color,
                         padding=spacing / 2,
                         align_content=align_content,
-                        margin_bottom=spacing / 2,
+                        margin_bottom=spacing / 2
                     ),
                     flex_direction=FlexDirection.Row,
                     flex_wrap=FlexWrap.Wrap,
@@ -99,7 +99,7 @@ def demo():
             flex_direction=FlexDirection.Row,
             width="100%",
             flex_wrap=FlexWrap.Wrap,
-            margin=-spacing / 2,
+            margin=-spacing / 2
             # border_thickness=0.5
 
         ),
@@ -152,6 +152,21 @@ def demo():
             width="100%",
             flex_wrap=FlexWrap.NoWrap,
             keep_together=True
+        ),
+        FlexBox(
+            FlexItem(
+                width="25%",
+                height=100,
+                background_color=item_color,
+                padding=spacing / 2,
+            ),
+            padding=spacing / 2,
+            flex_direction=FlexDirection.Column,
+            background_color=container_color,
+            width="100%",
+            height=400,
+            align_items=AlignItems.FlexCenter,
+            align_content=AlignContent.Stretch
         )
     ])
 
