@@ -58,12 +58,16 @@ class FlexItem2(Flowable):
         if height:
             height = FlexMeasurement2.min(height, self.max_height)
 
-        self.padding.base = width or 0
-        self.margin.base = width or 0
-        self.border.base = width or 0
+        self.padding.width_base = width or 0
+        self.margin.width_base = width or 0
+        self.border.width_base = width or 0
+
+        self.padding.height_base = height or 0
+        self.margin.height_base = height or 0
+        self.border.height_base = height or 0
 
         frame_width = self.padding.width + self.margin.width + self.border.width
-        frame_height = self.padding.height + self.margin.height + self.border.width
+        frame_height = self.padding.height + self.margin.height + self.border.height
 
         content_width, content_height = self.wrap_content(
             width - frame_width if width else 0,
@@ -203,16 +207,16 @@ class FlexBox2(FlexItem2):
 
         if self.flex_wrap == FlexWrap2.Wrap2:
             if self.flex_direction == FlexDirection2.Row2:
-                avaliable, lengths = avail_width, widths(self.items)
+                available, lengths = avail_width, widths(self.items)
             else:
-                avaliable, lengths = avail_height, heights(self.items)
+                available, lengths = avail_height, heights(self.items)
 
             self.rows = []
             row = FlexRow()
             row_length = 0
             for item, length in zip(self.items, lengths):
                 row_length += length
-                if row_length > avaliable and row:
+                if row_length > available and row:
                     self.rows.append(row)
                     row = FlexRow()
                     row_length = length
@@ -244,9 +248,6 @@ class FlexBox2(FlexItem2):
                 y = avail_height - y
                 for item, x in zip(row, self.justify_content.points(widths(row), avail_width)):
                     align_item = getattr(item, "align_self", None) or self.align_items
-
-                    if hasattr(item, "flag"):
-                        print(item, x,  y - float(item.height) - align_item.point(float(item.height), row_height), y, float(item.height), align_item.point(float(item.height), row_height))
 
                     item.drawOn(
                         self.canv,

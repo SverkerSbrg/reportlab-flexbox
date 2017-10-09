@@ -37,6 +37,35 @@ class FlexMeasurement2:
     def __bool__(self):
         return not (self._static is None and self._relative is None)
 
+    def __eq__(self, other):
+        if isinstance(other, FlexMeasurement2):
+            return (
+                self._static == other._static
+            ) and (
+                self._relative == other._relative
+            ) and (
+                self._base == other._base
+            )
+        elif isinstance(other, float):
+            return float(self) == other
+        return False
+
+    def __str__(self):
+        args = []
+
+        if self._static:
+            args.append(self.static)
+        if self._relative:
+            args.append("%s%%" % self.relative)
+
+        if not args:
+            return "0"
+
+        return "+".join(args)
+
+    def __repr__(self):
+        return str(self)
+
     @staticmethod
     def parse(value):
         if issubclass(type(value), FlexMeasurement2):
@@ -90,7 +119,8 @@ class Frame2:
     bottom = Measurement2Descriptor()
     left = Measurement2Descriptor()
 
-    _base = None
+    _width_base = None
+    _height_base = None
 
     def __init__(self, *measurements):
         if len(measurements) == 1:
@@ -120,16 +150,29 @@ class Frame2:
             self.left = None
 
     @property
-    def base(self):
-        if self._base is None:
+    def width_base(self):
+        if self._width_base is None:
             raise Exception("Base not set.")
-        return self._base
+        return self._width_base
 
-    @base.setter
-    def base(self, value):
-        self._base = value
+    @width_base.setter
+    def width_base(self, value):
+        self._width_base = value
 
-        for measurement in (self.top, self.right, self.bottom, self.left):
+        for measurement in (self.right, self.left):
+            measurement.base = value
+            
+    @property
+    def height_base(self):
+        if self._height_base is None:
+            raise Exception("Base not set.")
+        return self._height_base
+
+    @height_base.setter
+    def height_base(self, value):
+        self._height_base = value
+
+        for measurement in (self.top, self.bottom):
             measurement.base = value
 
     @property
@@ -152,4 +195,9 @@ class FrameDescriptor:
         return self.values[instance]
 
     def __set__(self, instance, value):
-        self.values[instance] = Frame2(value)
+        if type(value) in (str, int, float, FlexMeasurement2) or value is None:
+            frame = Frame2(value)
+        else:
+            frame = Frame2(*value)
+
+        self.values[instance] = frame

@@ -14,6 +14,12 @@ class TestBox(FlexBox2):
 
         super().__init__(*items, **kwargs)
 
+    def wrap_content(self, avail_width, avail_height):
+        self.avail_content_width = avail_width
+        self.avail_content_height = avail_height
+
+        return super().wrap_content(avail_width, avail_height)
+
 
 class TestItem(FlexItem2):
     test_x = None
@@ -62,6 +68,12 @@ class FlexBoxTestCase(TestCase):
                 msg="Item %d was positioned on %s instead of %s." % (i, position, expected_position)
             )
             i += 1
+
+    def assertContentSize(self, test_box, expected_width, expected_height):
+        width, height = test_box.wrap(test_box.avail_width, test_box.avail_height)
+        self.assertEqual(expected_width, test_box.avail_content_width)
+        self.assertEqual(expected_height, test_box.avail_content_height)
+
 
     def test_single_item_auto_size(self):
         box = TestBox(
@@ -603,6 +615,79 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             avail_height=200
         )
         self.assertWrap(box, 50, 50)
+
+    def test_margin_absolute_symmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            margin=5
+        )
+        self.assertContentSize(box, 40, 15)
+
+    def test_margin_relative_symmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            margin="10%"
+        )
+        self.assertContentSize(box, 40, 20)
+
+    def test_margin_asymmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            margin=("10%", 5, "10%"),
+        )
+        self.assertContentSize(box, 40, 20)
+        
+    def test_padding_absolute_symmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            padding=5
+        )
+        self.assertContentSize(box, 40, 15)
+
+    def test_padding_relative_symmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            padding="10%"
+        )
+        self.assertContentSize(box, 40, 20)
+
+    def test_padding_asymmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            padding=("10%", 5, "10%"),
+        )
+        self.assertContentSize(box, 40, 20)
+        
+    def test_border_absolute_symmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            border=5
+        )
+        self.assertContentSize(box, 40, 15)
+
+    def test_border_relative_symmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            border="10%"
+        )
+        self.assertContentSize(box, 40, 20)
+
+    def test_border_asymmetric(self):
+        box = TestBox(
+            width=50,
+            height=25,
+            border=("10%", 5, "10%"),
+        )
+        self.assertContentSize(box, 40, 20)
+
 
 
 
