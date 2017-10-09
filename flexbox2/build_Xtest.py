@@ -2,8 +2,8 @@ from datetime import datetime
 
 from reportlab.lib.colors import HexColor
 
+from demo.dev_test import TestPage, TestDoc
 from flexbox2.flex import TestItem
-from tests.dev_test import TestPage, TestDoc
 
 doc = TestDoc(filename="test_%s.pdf" % datetime.now().strftime("%Y%m%d_%H%M%S"), pageTemplates=[TestPage()])
 

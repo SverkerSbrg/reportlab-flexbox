@@ -1,8 +1,10 @@
 from itertools import zip_longest
 from unittest import TestCase
 
+from flexbox.options import FlexStart
 from flexbox2.flex import FlexBox2, FlexItem2
-from flexbox2.options import FlexDirection2, FlexWrap2, JustifyContent2, AlignContent2, AlignItems2
+from flexbox2.options import FlexDirection2, FlexWrap2, JustifyContent2, AlignContent2, AlignItems2, Stretch2, \
+    SpaceBetween2
 
 
 class TestBox(FlexBox2):
@@ -687,6 +689,22 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             border=("10%", 5, "10%"),
         )
         self.assertContentSize(box, 40, 20)
+
+    def test_invalid_arguments(self):
+        for attr, value in (
+                ("flex_direction", FlexWrap2.NoWrap2),
+                ("justify_content", Stretch2),
+                ("align_items", SpaceBetween2),
+                ("align_content", FlexDirection2.Row2),
+                ("flex_wrap", FlexStart),
+                ("flex_direction", False),
+                ("justify_content", True),
+                ("align_items", 2),
+                ("align_content", []),
+        ):
+            with self.assertRaises(ValueError):
+                box = TestBox()
+                setattr(box, attr, value)
 
 
 

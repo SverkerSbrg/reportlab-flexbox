@@ -1,2 +1,2 @@
 reportlab
-fortnum==0.0.2
+fortnum==0.0.3

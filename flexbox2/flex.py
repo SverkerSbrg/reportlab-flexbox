@@ -1,3 +1,4 @@
+from fortnum import FortnumDescriptor
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Flowable
 
@@ -166,37 +167,43 @@ class FlexRow(list):
 
 
 class FlexBox2(FlexItem2):
+    flex_direction = FortnumDescriptor("flex_direction", FlexDirection2, default=FlexDirection2.Row2)
+    justify_content = FortnumDescriptor("justify_content", JustifyContent2, default=JustifyContent2.FlexStart)
+    align_items = FortnumDescriptor("align_items", AlignItems2, default=AlignItems2.FlexStart)
+    align_content = FortnumDescriptor("align_content", AlignContent2, default=AlignContent2.Stretch)
+    flex_wrap = FortnumDescriptor("flex_wrap", FlexWrap2, default=FlexWrap2.NoWrap2)
+
     def __init__(self, *flex_items, flex_direction=None, justify_content=None, align_content=None, align_items=None,
                   flex_wrap=None, keep_together=None,  **kwargs):
 
         self.items = flex_items
         self.rows = None
 
-        self.flex_direction = flex_direction or FlexDirection2.Row2
-        self.justify_content = justify_content or JustifyContent2.FlexStart
-        self.align_items = align_items or AlignItems2.FlexStart
-        self.align_content = align_content or AlignContent2.Stretch
-        self.flex_wrap = flex_wrap or FlexWrap2.NoWrap2
+        self.flex_direction = flex_direction
+        self.justify_content = justify_content
+        self.align_items = align_items
+        self.align_content = align_content
+        self.flex_wrap = flex_wrap
         self.keep_together = keep_together if keep_together is not None else False
 
         super().__init__(**kwargs)
 
-        self._validate_configuration()
-
-    def _validate_configuration(self):
-        for attr, collection in (
-                ("flex_direction", FlexDirection2),
-                ("justify_content", JustifyContent2),
-                ("align_content", AlignContent2),
-                ("align_items", AlignItems2),
-                ("flex_wrap", FlexWrap2),
-        ):
-            value = getattr(self, attr)
-            if value not in collection:
-                raise ValueError("'%s' is not av valid value for %s.%s. Try [%s]" % (
-                    value, type(self).__name__, attr,
-                    ", ".join(("%s.%s" % (collection.__name__, item.__name__) for item in collection))
-                ))
+    #     self._validate_configuration()
+    #
+    # def _validate_configuration(self):
+    #     for attr, collection in (
+    #             ("flex_direction", FlexDirection2),
+    #             ("justify_content", JustifyContent2),
+    #             ("align_content", AlignContent2),
+    #             ("align_items", AlignItems2),
+    #             ("flex_wrap", FlexWrap2),
+    #     ):
+    #         value = getattr(self, attr)
+    #         if value not in collection:
+    #             raise ValueError("'%s' is not av valid value for %s.%s. Try [%s]" % (
+    #                 value, type(self).__name__, attr,
+    #                 ", ".join(("%s.%s" % (collection.__name__, item.__name__) for item in collection))
+    #             ))
 
     def wrap_content(self, avail_width, avail_height):
         if not self.items:
