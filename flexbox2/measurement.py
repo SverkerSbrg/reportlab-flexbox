@@ -113,7 +113,7 @@ class Measurement2Descriptor:
         self.values[instance] = FlexMeasurement2.parse(value)
 
 
-class Frame2:
+class FlexFrame:
     top = Measurement2Descriptor()
     right = Measurement2Descriptor()
     bottom = Measurement2Descriptor()
@@ -184,20 +184,20 @@ class Frame2:
         return self.top + self.bottom
 
 
-class FrameDescriptor:
+class FlexFrameDescriptor:
     def __init__(self):
         self.values = WeakKeyDictionary()
 
     def __get__(self, instance, owner):
         if instance not in self.values:
-            self.values[instance] = Frame2()
+            self.values[instance] = FlexFrame()
 
         return self.values[instance]
 
     def __set__(self, instance, value):
         if type(value) in (str, int, float, FlexMeasurement2) or value is None:
-            frame = Frame2(value)
+            frame = FlexFrame(value)
         else:
-            frame = Frame2(*value)
+            frame = FlexFrame(*value)
 
         self.values[instance] = frame

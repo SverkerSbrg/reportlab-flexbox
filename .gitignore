@@ -99,4 +99,6 @@ ENV/
 .mypy_cache/
 
 tests/*.pdf
+
+demo/options_*.pdf
 .idea/

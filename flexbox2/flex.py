@@ -1,8 +1,8 @@
 from fortnum import FortnumDescriptor
 from reportlab.lib.colors import HexColor
-from reportlab.platypus import Flowable
+from reportlab.platypus import Flowable, Paragraph
 
-from flexbox2.measurement import Measurement2Descriptor, FlexMeasurement2, FrameDescriptor
+from flexbox2.measurement import Measurement2Descriptor, FlexMeasurement2, FlexFrameDescriptor
 from flexbox2.options import FlexDirection2, JustifyContent2, AlignItems2, AlignContent2, FlexWrap2, Stretch2
 
 
@@ -18,9 +18,9 @@ class FlexItem2(Flowable):
     background_color = None
     border_color = None
 
-    margin = FrameDescriptor()
-    border = FrameDescriptor()
-    padding = FrameDescriptor()
+    margin = FlexFrameDescriptor()
+    border = FlexFrameDescriptor()
+    padding = FlexFrameDescriptor()
 
     def __init__(self, min_width=None, width=None, max_width=None, min_height=None, height=None, max_height=None,
                  margin=None, border=None, padding=None, background_color=None, border_color=None, align_self=None):
@@ -188,23 +188,6 @@ class FlexBox2(FlexItem2):
 
         super().__init__(**kwargs)
 
-    #     self._validate_configuration()
-    #
-    # def _validate_configuration(self):
-    #     for attr, collection in (
-    #             ("flex_direction", FlexDirection2),
-    #             ("justify_content", JustifyContent2),
-    #             ("align_content", AlignContent2),
-    #             ("align_items", AlignItems2),
-    #             ("flex_wrap", FlexWrap2),
-    #     ):
-    #         value = getattr(self, attr)
-    #         if value not in collection:
-    #             raise ValueError("'%s' is not av valid value for %s.%s. Try [%s]" % (
-    #                 value, type(self).__name__, attr,
-    #                 ", ".join(("%s.%s" % (collection.__name__, item.__name__) for item in collection))
-    #             ))
-
     def wrap_content(self, avail_width, avail_height):
         if not self.items:
             return 0, 0
@@ -272,17 +255,34 @@ class FlexBox2(FlexItem2):
                                 avail_height - float(item.height) - y, )
 
 
-class TestItem(FlexItem2):
+class FlexFlowable2(FlexItem2):
+    flowable = None
+
+    vertical_align = FortnumDescriptor("vertical_align", AlignItems2, default=AlignItems2.FlexCenter)
+    horizontal_align = FortnumDescriptor("horizontal_align", AlignItems2, default=AlignItems2.FlexCenter)
+
+    def __init__(self, flowable, vertical_align=None, horizontal_align=None, **kwargs):
+        super().__init__(**kwargs)
+
+        self.flowable = flowable
+        self.vertical_align = vertical_align or self.vertical_align
+        self.horizontal_align = horizontal_align or self.horizontal_align
+
     def wrap_content(self, avail_width, avail_height):
-        return 100, 100
+        return self.flowable.wrap(avail_width, avail_height)
 
     def draw_content(self, avail_width, avail_height, requested_width, requested_height):
-        self.canv.setStrokeColor(HexColor(0xFF0000))
-        self.canv.rect(0, 0, requested_width, requested_height)
-        self.canv.setLineWidth(10)
-        self.canv.line(0, 0, requested_width, requested_height)
+        self.flowable.drawOn(
+            self.canv,
+            self.vertical_align.point(requested_width, avail_width),
+            self.horizontal_align.point(requested_height, avail_height)
+        )
 
-        self.canv.setStrokeColor(HexColor(0x000000))
-        self.canv.setLineWidth(1)
-        self.canv.line(0, 0, requested_width, requested_height)
+
+class FlexParagraph2(FlexFlowable2):
+    def __init__(self, text, style, **kwargs):
+        super().__init__(
+            Paragraph(text, style),
+            **kwargs
+        )
 
