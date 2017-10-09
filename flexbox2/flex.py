@@ -86,11 +86,6 @@ class FlexItem2(Flowable):
         self.height = height
         self.height.base = 0
 
-        # if type(self).__name__ == "TestBox3":
-        #     print("TestBox3.2")
-        #     print("content:", content_width, content_height)
-        #     print("parent :", width, height)
-
         return width, height
 
     def wrap_content(self, avail_width, avail_height):
@@ -200,6 +195,9 @@ class FlexBox2(FlexItem2):
                 ))
 
     def wrap_content(self, avail_width, avail_height):
+        if not self.items:
+            return 0, 0
+
         for item in self.items:
             item.wrap(avail_width, avail_height)
 

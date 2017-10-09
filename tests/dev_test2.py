@@ -11,7 +11,7 @@ from reportlab.platypus import KeepTogether
 # from flexbox import AlignContent, AlignItems, FlexBox, FlexDirection, FlexItem, FlexParagraph, FlexWrap, JustifyContent
 from flexbox2.flex import FlexBox2, FlexItem2
 from flexbox2.measurement import FlexMeasurement2
-from flexbox2.options import AlignContent2, FlexDirection2, FlexWrap2
+from flexbox2.options import AlignContent2, FlexDirection2, FlexWrap2, AlignItems2
 
 
 class TestPage(PageTemplate):
@@ -75,16 +75,33 @@ h2 = ParagraphStyle("H2", fontSize=12)
 def demo():
     print(doc.build(flowables=[
         # FlexParagraph("AlignContent", h1, margin_bottom=spacing),
+        # FlexBox2(
+        #     FlexItem2(width=100, height=70, margin=1, background_color=item_color),
+        #     FlexItem2(width=150, height=50, margin=1, background_color=item_color),
+        #     # FlexItem2(width=50, height=50, margin=spacing, background_color=item_color),
+        #     # padding=spacing,
+        #     background_color=container_color,
+        #     flex_direction=FlexDirection2.Row2,
+        #     # width=100,
+        #     # height=100,
+        #     flex_wrap=FlexWrap2.NoWrap2
+        # ),
         FlexBox2(
-            FlexItem2(width=100, height=70, margin=1, background_color=item_color),
-            FlexItem2(width=150, height=50, margin=1, background_color=item_color),
+            FlexItem2(width=20, height=10, margin=1, background_color=item_color, align_self=AlignItems2.FlexStart),
+            FlexItem2(width=20, height=10, margin=1, background_color=item_color, align_self=AlignItems2.FlexCenter),
+            FlexItem2(width=20, height=10, margin=1, background_color=item_color, align_self=AlignItems2.FlexEnd),
+            FlexItem2(width=20, height=10, margin=1, background_color=item_color, align_self=AlignItems2.FlexStart),
+            FlexItem2(width=20, height=10, margin=1, background_color=item_color, align_self=AlignItems2.FlexCenter),
+            FlexItem2(width=20, height=10, margin=1, background_color=item_color, align_self=AlignItems2.FlexEnd),
             # FlexItem2(width=50, height=50, margin=spacing, background_color=item_color),
             # padding=spacing,
             background_color=container_color,
             flex_direction=FlexDirection2.Row2,
+            flex_wrap=FlexWrap2.Wrap2,
+            width=60,
+            height=60,
             # width=100,
             # height=100,
-            flex_wrap=FlexWrap2.NoWrap2
         )
     ]))
 
