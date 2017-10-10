@@ -1,13 +1,13 @@
 from itertools import zip_longest
 from unittest import TestCase
 
-from flexbox2.flex import FlexBox2, FlexItem2
-from flexbox2.measurement import FlexMeasurement2
-from flexbox2.options import FlexDirection2, FlexWrap2, JustifyContent2, AlignContent2, AlignItems2, Stretch2, \
-    SpaceBetween2, FlexStart2
+from flexbox2.flex import FlexBox, FlexItem
+from flexbox2.measurement import FlexMeasurement
+from flexbox2.options import FlexDirection, FlexWrap, JustifyContent, AlignContent, AlignItems, Stretch, \
+    SpaceBetween, FlexStart
 
 
-class TestBox(FlexBox2):
+class TestBox(FlexBox):
     canv = None
 
     def __init__(self, *items, avail_width=1000, avail_height=1000, **kwargs):
@@ -23,7 +23,7 @@ class TestBox(FlexBox2):
         return super().wrap_content(avail_width, avail_height)
 
 
-class TestItem(FlexItem2):
+class TestItem(FlexItem):
     test_x = None
     test_y = None
 
@@ -112,12 +112,12 @@ class DebugBox(TestBox):
         for measurement in (self.min_height, self.height, self.max_height):
             measurement.base = avail_height
 
-        width = FlexMeasurement2.max(self.width, self.min_width)
+        width = FlexMeasurement.max(self.width, self.min_width)
         if width:
-            width = FlexMeasurement2.min(width, self.max_width)
-        height = FlexMeasurement2.max(self.height, self.min_height)
+            width = FlexMeasurement.min(width, self.max_width)
+        height = FlexMeasurement.max(self.height, self.min_height)
         if height:
-            height = FlexMeasurement2.min(height, self.max_height)
+            height = FlexMeasurement.min(height, self.max_height)
 
         print("   self", width, height)
 
@@ -141,9 +141,9 @@ class DebugBox(TestBox):
 
         if width is None or height is None:
             if width is None:
-                width = FlexMeasurement2.min(content_width + frame_width)
+                width = FlexMeasurement.min(content_width + frame_width)
             if height is None:
-                height = FlexMeasurement2.min(content_height + frame_height)
+                height = FlexMeasurement.min(content_height + frame_height)
 
             content_width, content_height = self.wrap_content(width - frame_width, height - frame_height)
 
@@ -162,8 +162,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_row_no_wrap_single_item(self):
         box = TestBox(
             TestItem(width=100, height=50),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap
         )
         self.assertWrap(box, 100, 50)
         # self.assertDrawItems(box, [(0, 0)])
@@ -173,16 +173,16 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=100, height=50),
             TestItem(width=50, height=25),
             TestItem(width=10, height=5),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap
         )
         self.assertWrap(box, 160, 50)
 
     def test_column_no_wrap_single_item(self):
         box = TestBox(
             TestItem(width=100, height=50),
-            flex_direction=FlexDirection2.Column2,
-            flex_wrap=FlexWrap2.NoWrap2
+            flex_direction=FlexDirection.Column2,
+            flex_wrap=FlexWrap.NoWrap
         )
         self.assertWrap(box, 100, 50)
         # self.assertDrawItems(box, [(0, 0)])
@@ -192,8 +192,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=100, height=50),
             TestItem(width=50, height=25),
             TestItem(width=10, height=5),
-            flex_direction=FlexDirection2.Column2,
-            flex_wrap=FlexWrap2.NoWrap2
+            flex_direction=FlexDirection.Column2,
+            flex_wrap=FlexWrap.NoWrap
         )
         self.assertWrap(box, 100, 80)
 
@@ -204,8 +204,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=40, height=5),
             TestItem(width=120, height=50),
             TestItem(width=60, height=50),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.Wrap2,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.Wrap,
             width=120
         )
         self.assertWrap(box, 120, 150)
@@ -218,8 +218,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=60, height=50),
             TestItem(width=40, height=50),
             TestItem(width=20, height=50),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.Wrap2,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.Wrap,
             width=100
         )
         self.assertWrap(box, 100, 200)
@@ -232,8 +232,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=40, height=20),
             TestItem(width=40, height=20),
             TestItem(width=40, height=20),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.Wrap2
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.Wrap
         )
         self.assertWrap(box, 200, 20)
         self.assertRows(box, [5])
@@ -245,8 +245,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=5, height=40),
             TestItem(width=50, height=120),
             TestItem(width=50, height=60),
-            flex_direction=FlexDirection2.Column2,
-            flex_wrap=FlexWrap2.Wrap2,
+            flex_direction=FlexDirection.Column2,
+            flex_wrap=FlexWrap.Wrap,
             height=120
         )
         self.assertWrap(box, 150, 120)
@@ -259,8 +259,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=50, height=60),
             TestItem(width=50, height=40),
             TestItem(width=50, height=20),
-            flex_direction=FlexDirection2.Column2,
-            flex_wrap=FlexWrap2.Wrap2,
+            flex_direction=FlexDirection.Column2,
+            flex_wrap=FlexWrap.Wrap,
             height=100
         )
         self.assertWrap(box, 200, 100)
@@ -273,8 +273,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=40, height=20),
             TestItem(width=40, height=20),
             TestItem(width=40, height=20),
-            flex_direction=FlexDirection2.Column2,
-            flex_wrap=FlexWrap2.Wrap2
+            flex_direction=FlexDirection.Column2,
+            flex_wrap=FlexWrap.Wrap
         )
         self.assertWrap(box, 40, 100)
         self.assertRows(box, [5,])
@@ -282,9 +282,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_justify_content_flex_start_single(self):
         box = TestBox(
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexStart,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexStart,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -295,9 +295,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexStart,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexStart,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -308,9 +308,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexStart,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexStart,
             width=50
         )
         self.assertWrap(box, 50, 10)
@@ -319,9 +319,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_justify_content_flex_end_single(self):
         box = TestBox(
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexEnd,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexEnd,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -332,9 +332,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexEnd,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexEnd,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -345,9 +345,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexEnd,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexEnd,
             width=50
         )
         self.assertWrap(box, 50, 10)
@@ -356,9 +356,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_justify_content_flex_center_single(self):
         box = TestBox(
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexCenter,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexCenter,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -369,9 +369,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexCenter,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexCenter,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -382,9 +382,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.FlexCenter,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.FlexCenter,
             width=50
         )
         self.assertWrap(box, 50, 10)
@@ -393,9 +393,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_justify_content_space_between_single(self):
         box = TestBox(
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceBetween,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceBetween,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -406,9 +406,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceBetween,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceBetween,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -419,9 +419,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceBetween,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceBetween,
             width=50
         )
         self.assertWrap(box, 50, 10)
@@ -430,9 +430,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_justify_content_space_around_single(self):
         box = TestBox(
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceAround,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceAround,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -443,9 +443,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceAround,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceAround,
             width=120
         )
         self.assertWrap(box, 120, 10)
@@ -456,9 +456,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceAround,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceAround,
             width=50
         )
         self.assertWrap(box, 50, 10)
@@ -467,9 +467,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
     def test_justify_content_space_evenly_single(self):
         box = TestBox(
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceEvenly,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceEvenly,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -480,9 +480,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceEvenly,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceEvenly,
             width=100
         )
         self.assertWrap(box, 100, 10)
@@ -493,9 +493,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
             TestItem(width=20, height=10),
-            flex_direction=FlexDirection2.Row2,
-            flex_wrap=FlexWrap2.NoWrap2,
-            justify_content=JustifyContent2.SpaceEvenly,
+            flex_direction=FlexDirection.Row2,
+            flex_wrap=FlexWrap.NoWrap,
+            justify_content=JustifyContent.SpaceEvenly,
             width=50
         )
         self.assertWrap(box, 50, 10)
@@ -508,9 +508,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.FlexStart
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.FlexStart
         )
         self.assertDrawItems(box, [(0, 0), (0, 20), (0, 40)])
 
@@ -521,9 +521,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.FlexEnd
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.FlexEnd
         )
         self.assertDrawItems(box, [(0, 60), (0, 80), (0, 100)])
 
@@ -534,9 +534,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.FlexCenter
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.FlexCenter
         )
         self.assertDrawItems(box, [(0, 30), (0, 50), (0, 70)])
 
@@ -547,9 +547,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.SpaceBetween2
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.SpaceBetween2
         )
         self.assertDrawItems(box, [(0, 0), (0, 50), (0, 100)])
 
@@ -560,9 +560,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.SpaceAround
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.SpaceAround
         )
         self.assertDrawItems(box, [(0, 10), (0, 50), (0, 90)])
 
@@ -573,9 +573,9 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.SpaceEvenly
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.SpaceEvenly
         )
         self.assertDrawItems(box, [(0, 15), (0, 50), (0, 85)])
 
@@ -586,10 +586,10 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=120, height=20),
             width=120,
             height=120,
-            flex_wrap=FlexWrap2.Wrap2,
-            flex_direction=FlexDirection2.Row2,
-            align_content=AlignContent2.Stretch,
-            align_items=AlignItems2.FlexStart
+            flex_wrap=FlexWrap.Wrap,
+            flex_direction=FlexDirection.Row2,
+            align_content=AlignContent.Stretch,
+            align_items=AlignItems.FlexStart
         )
         self.assertDrawItems(box, [(0, 0), (0, 40), (0, 80)])
 
@@ -598,8 +598,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=10, height=40),
             TestItem(width=10, height=20),
             TestItem(width=10, height=10),
-            TestItem(width=10, height=10, align_self=AlignItems2.FlexEnd),
-            align_items=AlignItems2.FlexStart
+            TestItem(width=10, height=10, align_self=AlignItems.FlexEnd),
+            align_items=AlignItems.FlexStart
         )
         self.assertDrawItems(box, [(0, 0), (10, 0), (20, 0), (30, 30)])
 
@@ -608,8 +608,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=10, height=40),
             TestItem(width=10, height=20),
             TestItem(width=10, height=10),
-            TestItem(width=10, height=10, align_self=AlignItems2.FlexStart),
-            align_items=AlignItems2.FlexEnd
+            TestItem(width=10, height=10, align_self=AlignItems.FlexStart),
+            align_items=AlignItems.FlexEnd
         )
         self.assertDrawItems(box, [(0, 0), (10, 20), (20, 30), (30, 0)])
 
@@ -618,32 +618,32 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             TestItem(width=10, height=40),
             TestItem(width=10, height=20),
             TestItem(width=10, height=10),
-            TestItem(width=10, height=10, align_self=AlignItems2.FlexStart),
-            align_items=AlignItems2.FlexCenter
+            TestItem(width=10, height=10, align_self=AlignItems.FlexStart),
+            align_items=AlignItems.FlexCenter
         )
         self.assertDrawItems(box, [(0, 0), (10, 10), (20, 15), (30, 0)])
 
     def test_align_self(self):
         box = TestBox(
-            TestItem(width=20, height=10, align_self=AlignItems2.FlexStart),
-            TestItem(width=20, height=10, align_self=AlignItems2.FlexCenter),
-            TestItem(width=20, height=10, align_self=AlignItems2.FlexEnd),
-            TestItem(width=20, height=10, align_self=AlignItems2.FlexStart),
-            TestItem(width=20, height=10, align_self=AlignItems2.FlexCenter),
-            TestItem(width=20, height=10, align_self=AlignItems2.FlexEnd),
+            TestItem(width=20, height=10, align_self=AlignItems.FlexStart),
+            TestItem(width=20, height=10, align_self=AlignItems.FlexCenter),
+            TestItem(width=20, height=10, align_self=AlignItems.FlexEnd),
+            TestItem(width=20, height=10, align_self=AlignItems.FlexStart),
+            TestItem(width=20, height=10, align_self=AlignItems.FlexCenter),
+            TestItem(width=20, height=10, align_self=AlignItems.FlexEnd),
             height=60,
             width=60,
-            flex_wrap=FlexWrap2.Wrap2
+            flex_wrap=FlexWrap.Wrap
         )
         self.assertDrawItems(box, [(0, 0), (20, 10), (40, 20), (0, 30), (20, 40), (40, 50)])
 
     def test_default_settings(self):
         box = TestBox()
-        self.assertEqual(box.flex_direction, FlexDirection2.Row2)
-        self.assertEqual(box.flex_wrap, FlexWrap2.NoWrap2)
-        self.assertEqual(box.justify_content, JustifyContent2.FlexStart)
-        self.assertEqual(box.align_items, AlignItems2.FlexStart)
-        self.assertEqual(box.align_content, AlignContent2.Stretch)
+        self.assertEqual(box.flex_direction, FlexDirection.Row2)
+        self.assertEqual(box.flex_wrap, FlexWrap.NoWrap)
+        self.assertEqual(box.justify_content, JustifyContent.FlexStart)
+        self.assertEqual(box.align_items, AlignItems.FlexStart)
+        self.assertEqual(box.align_content, AlignContent.Stretch)
         self.assertEqual(box.align_self, None)
 
     def test_size_relative_full(self):
@@ -747,11 +747,11 @@ class FlexDirectionTestCase(FlexBoxTestCase):
 
     def test_invalid_arguments(self):
         for attr, value in (
-                ("flex_direction", FlexWrap2.NoWrap2),
-                ("justify_content", Stretch2),
-                ("align_items", SpaceBetween2),
-                ("align_content", FlexDirection2.Row2),
-                ("flex_wrap", FlexStart2),
+                ("flex_direction", FlexWrap.NoWrap),
+                ("justify_content", Stretch),
+                ("align_items", SpaceBetween),
+                ("align_content", FlexDirection.Row2),
+                ("flex_wrap", FlexStart),
                 ("flex_direction", False),
                 ("justify_content", True),
                 ("align_items", 2),

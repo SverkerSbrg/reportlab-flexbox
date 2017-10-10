@@ -6,7 +6,7 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import PageTemplate, BaseDocTemplate, Frame
 
-from flexbox2.flex import FlexItem2, FlexBox2, FlexParagraph2
+from flexbox2.flex import FlexItem, FlexBox, FlexParagraph2
 
 
 class DemoPage(PageTemplate):
@@ -46,7 +46,7 @@ h1 = ParagraphStyle("H1", fontSize=20, leading=20)
 h2 = ParagraphStyle("H2", fontSize=12)
 
 
-class DemoFlexItem(FlexItem2):
+class DemoFlexItem(FlexItem):
     def __init__(self, **kwargs):
         kwargs.update(
             background_color=item_color,
@@ -55,7 +55,7 @@ class DemoFlexItem(FlexItem2):
         super().__init__(**kwargs)
 
 
-class DemoFlexBox(FlexBox2):
+class DemoFlexBox(FlexBox):
     def __init__(self, *items, **kwargs):
         kwargs.update(
             background_color=container_color,

@@ -1,7 +1,7 @@
 from weakref import WeakKeyDictionary
 
 
-class FlexMeasurement2:
+class FlexMeasurement:
     def __init__(self, static=None, relative=None):
         self._static = static
         self._relative = relative
@@ -38,7 +38,7 @@ class FlexMeasurement2:
         return not (self._static is None and self._relative is None)
 
     def __eq__(self, other):
-        if isinstance(other, FlexMeasurement2):
+        if isinstance(other, FlexMeasurement):
             return (
                 self._static == other._static
             ) and (
@@ -68,17 +68,17 @@ class FlexMeasurement2:
 
     @staticmethod
     def parse(value):
-        if issubclass(type(value), FlexMeasurement2):
+        if issubclass(type(value), FlexMeasurement):
             return value
 
         if value is None:
-            return FlexMeasurement2(None, None)
+            return FlexMeasurement(None, None)
 
         if isinstance(value, (int, float)):
-            return FlexMeasurement2(value, 0)
+            return FlexMeasurement(value, 0)
 
         if isinstance(value, str) and "%" in value:
-            return FlexMeasurement2(0, float(value.replace("%", "")) / 100)
+            return FlexMeasurement(0, float(value.replace("%", "")) / 100)
 
         raise Exception("Unable to parse measurement '%s'" % value)
 
@@ -99,7 +99,7 @@ class FlexMeasurement2:
             return None
 
 
-class Measurement2Descriptor:
+class FlexMeasurementDescriptor:
     def __init__(self):
         self.values = WeakKeyDictionary()
 
@@ -110,14 +110,14 @@ class Measurement2Descriptor:
             return None
 
     def __set__(self, instance, value):
-        self.values[instance] = FlexMeasurement2.parse(value)
+        self.values[instance] = FlexMeasurement.parse(value)
 
 
 class FlexFrame:
-    top = Measurement2Descriptor()
-    right = Measurement2Descriptor()
-    bottom = Measurement2Descriptor()
-    left = Measurement2Descriptor()
+    top = FlexMeasurementDescriptor()
+    right = FlexMeasurementDescriptor()
+    bottom = FlexMeasurementDescriptor()
+    left = FlexMeasurementDescriptor()
 
     _width_base = None
     _height_base = None
@@ -195,7 +195,7 @@ class FlexFrameDescriptor:
         return self.values[instance]
 
     def __set__(self, instance, value):
-        if type(value) in (str, int, float, FlexMeasurement2) or value is None:
+        if type(value) in (str, int, float, FlexMeasurement) or value is None:
             frame = FlexFrame(value)
         else:
             frame = FlexFrame(*value)

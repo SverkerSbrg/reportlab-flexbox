@@ -13,7 +13,6 @@ class ColorDescriptor():
         elif isinstance(value, int):
             value = HexColor(value)
         elif isinstance(value, tuple) and len(value) == 3:
-
-
+            pass
 
         self._values[instance] = value

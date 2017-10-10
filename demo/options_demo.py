@@ -1,11 +1,11 @@
 from reportlab.platypus import KeepTogether
 
 from demo.common import DemoDocTemplate, h1, spacing, DemoFlexBox, DemoFlexItem, h2
-from flexbox2.flex import FlexParagraph2, FlexBox2, FlexItem2
-from flexbox2.options import AlignContent2, JustifyContent2, FlexDirection2, FlexWrap2, AlignItems2
+from flexbox2.flex import FlexParagraph2, FlexBox, FlexItem
+from flexbox2.options import AlignContent, JustifyContent, FlexDirection, FlexWrap, AlignItems
 
-wrap = FlexBox2(
-    FlexParagraph2(str(FlexWrap2.NoWrap2), h2, padding=[spacing/2, spacing/2, 0]),
+wrap = FlexBox(
+    FlexParagraph2(str(FlexWrap.NoWrap), h2, padding=[spacing / 2, spacing / 2, 0]),
     DemoFlexBox(
         DemoFlexItem(width="35%", height=25),
         DemoFlexItem(width="15%", height=25),
@@ -14,9 +14,9 @@ wrap = FlexBox2(
         DemoFlexItem(width="25%", height=25),
         DemoFlexItem(width="15%", height=25),
         width="70%",
-        flex_wrap=FlexWrap2.NoWrap2
+        flex_wrap=FlexWrap.NoWrap
     ),
-    FlexParagraph2(str(FlexWrap2.Wrap2), h2, padding=[spacing / 2, spacing / 2, 0]),
+    FlexParagraph2(str(FlexWrap.Wrap), h2, padding=[spacing / 2, spacing / 2, 0]),
     DemoFlexBox(
         DemoFlexItem(width="35%", height=25),
         DemoFlexItem(width="15%", height=25),
@@ -25,15 +25,15 @@ wrap = FlexBox2(
         DemoFlexItem(width="25%", height=25),
         DemoFlexItem(width="15%", height=25),
         width="70%",
-        flex_wrap=FlexWrap2.Wrap2
+        flex_wrap=FlexWrap.Wrap
     ),
-    flex_direction=FlexDirection2.Column2,
+    flex_direction=FlexDirection.Column2,
     width="100%",
     margin=(0, -spacing/2)
 )
 
-justify_content = FlexBox2(
-    *list(FlexBox2(
+justify_content = FlexBox(
+    *list(FlexBox(
             FlexParagraph2(str(justify_content), h2, padding=[spacing/2, spacing/2, 0]),
             DemoFlexBox(
                 DemoFlexItem(width="30%", height=25),
@@ -42,17 +42,17 @@ justify_content = FlexBox2(
                 width="100%",
                 justify_content=justify_content
             ),
-            flex_direction=FlexDirection2.Column2,
+            flex_direction=FlexDirection.Column2,
             width="50%"
-        )for justify_content in JustifyContent2
-    ),
-    flex_wrap=FlexWrap2.Wrap2,
+        ) for justify_content in JustifyContent
+          ),
+    flex_wrap=FlexWrap.Wrap,
     width="100%",
     margin=(0, -spacing/2)
 )
 
-align_items = FlexBox2(
-    *list(FlexBox2(
+align_items = FlexBox(
+    *list(FlexBox(
         FlexParagraph2(str(align_items), h2, padding=[spacing/2, spacing / 2, 0]),
         DemoFlexBox(
             DemoFlexItem(width="25%", height="100%"),
@@ -63,16 +63,16 @@ align_items = FlexBox2(
             height=100,
             align_items=align_items
         ),
-        flex_direction=FlexDirection2.Column2,
+        flex_direction=FlexDirection.Column2,
         width="33.3%"
-    ) for align_items in AlignItems2),
-    flex_wrap=FlexWrap2.Wrap2,
+    ) for align_items in AlignItems),
+    flex_wrap=FlexWrap.Wrap,
     width="100%",
     margin=(0, -spacing/2)
 )
 
-align_content = FlexBox2(
-    *list(FlexBox2(
+align_content = FlexBox(
+    *list(FlexBox(
         FlexParagraph2(str(align_content), h2, padding=[spacing/2, spacing / 2, 0]),
         DemoFlexBox(
             DemoFlexItem(width="25%", height=20),
@@ -87,12 +87,12 @@ align_content = FlexBox2(
             width="100%",
             height=100,
             align_content=align_content,
-            flex_wrap=FlexWrap2.Wrap2
+            flex_wrap=FlexWrap.Wrap
         ),
-        flex_direction=FlexDirection2.Column2,
+        flex_direction=FlexDirection.Column2,
         width="33.3%"
-    ) for align_content in AlignContent2),
-    flex_wrap=FlexWrap2.Wrap2,
+    ) for align_content in AlignContent),
+    flex_wrap=FlexWrap.Wrap,
     width="100%",
     margin=(0, -spacing/2)
 )

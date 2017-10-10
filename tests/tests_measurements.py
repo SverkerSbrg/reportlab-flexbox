@@ -1,14 +1,14 @@
 import unittest
 
-from flexbox2.measurement import FlexFrame, FlexMeasurement2
+from flexbox2.measurement import FlexFrame, FlexMeasurement
 
 
 class FrameTestCase(unittest.TestCase):
     def assertFrame(self, frame, top, right, bottom, left):
-        self.assertEqual(frame.top, FlexMeasurement2(static=top[0], relative=top[1]))
-        self.assertEqual(frame.right, FlexMeasurement2(static=right[0], relative=right[1]))
-        self.assertEqual(frame.bottom, FlexMeasurement2(static=bottom[0], relative=bottom[1]))
-        self.assertEqual(frame.left, FlexMeasurement2(static=left[0], relative=left[1]))
+        self.assertEqual(frame.top, FlexMeasurement(static=top[0], relative=top[1]))
+        self.assertEqual(frame.right, FlexMeasurement(static=right[0], relative=right[1]))
+        self.assertEqual(frame.bottom, FlexMeasurement(static=bottom[0], relative=bottom[1]))
+        self.assertEqual(frame.left, FlexMeasurement(static=left[0], relative=left[1]))
 
     def test_symmetric_absolute(self):
         self.assertFrame(FlexFrame(10), (10, 0), (10, 0), (10, 0), (10, 0))

@@ -2,18 +2,18 @@ from fortnum import FortnumDescriptor
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Flowable, Paragraph
 
-from flexbox2.measurement import Measurement2Descriptor, FlexMeasurement2, FlexFrameDescriptor
-from flexbox2.options import FlexDirection2, JustifyContent2, AlignItems2, AlignContent2, FlexWrap2, Stretch2
+from flexbox2.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor
+from flexbox2.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap, Stretch
 
 
-class FlexItem2(Flowable):
-    min_width = Measurement2Descriptor()
-    width = Measurement2Descriptor()
-    max_width = Measurement2Descriptor()
+class FlexItem(Flowable):
+    min_width = FlexMeasurementDescriptor()
+    width = FlexMeasurementDescriptor()
+    max_width = FlexMeasurementDescriptor()
     
-    min_height = Measurement2Descriptor()
-    height = Measurement2Descriptor()
-    max_height = Measurement2Descriptor()
+    min_height = FlexMeasurementDescriptor()
+    height = FlexMeasurementDescriptor()
+    max_height = FlexMeasurementDescriptor()
 
     background_color = None
     border_color = None
@@ -52,12 +52,12 @@ class FlexItem2(Flowable):
         for measurement in (self.min_height, self.height, self.max_height):
             measurement.base = avail_height
 
-        width = FlexMeasurement2.max(self.width, self.min_width)
+        width = FlexMeasurement.max(self.width, self.min_width)
         if width:
-            width = FlexMeasurement2.min(width, self.max_width)
-        height = FlexMeasurement2.max(self.height, self.min_height)
+            width = FlexMeasurement.min(width, self.max_width)
+        height = FlexMeasurement.max(self.height, self.min_height)
         if height:
-            height = FlexMeasurement2.min(height, self.max_height)
+            height = FlexMeasurement.min(height, self.max_height)
 
         self.padding.width_base = width or 0
         self.margin.width_base = width or 0
@@ -77,9 +77,9 @@ class FlexItem2(Flowable):
 
         if width is None or height is None:
             if width is None:
-                width = FlexMeasurement2.min(content_width + frame_width)
+                width = FlexMeasurement.min(content_width + frame_width)
             if height is None:
-                height = FlexMeasurement2.min(content_height + frame_height)
+                height = FlexMeasurement.min(content_height + frame_height)
 
             content_width, content_height = self.wrap_content(width - frame_width, height - frame_height)
 
@@ -166,12 +166,12 @@ class FlexRow(list):
     height = None
 
 
-class FlexBox2(FlexItem2):
-    flex_direction = FortnumDescriptor("flex_direction", FlexDirection2, default=FlexDirection2.Row2)
-    justify_content = FortnumDescriptor("justify_content", JustifyContent2, default=JustifyContent2.FlexStart)
-    align_items = FortnumDescriptor("align_items", AlignItems2, default=AlignItems2.FlexStart)
-    align_content = FortnumDescriptor("align_content", AlignContent2, default=AlignContent2.Stretch)
-    flex_wrap = FortnumDescriptor("flex_wrap", FlexWrap2, default=FlexWrap2.NoWrap2)
+class FlexBox(FlexItem):
+    flex_direction = FortnumDescriptor("flex_direction", FlexDirection, default=FlexDirection.Row2)
+    justify_content = FortnumDescriptor("justify_content", JustifyContent, default=JustifyContent.FlexStart)
+    align_items = FortnumDescriptor("align_items", AlignItems, default=AlignItems.FlexStart)
+    align_content = FortnumDescriptor("align_content", AlignContent, default=AlignContent.Stretch)
+    flex_wrap = FortnumDescriptor("flex_wrap", FlexWrap, default=FlexWrap.NoWrap)
 
     def __init__(self, *flex_items, flex_direction=None, justify_content=None, align_content=None, align_items=None,
                   flex_wrap=None, keep_together=None,  **kwargs):
@@ -195,8 +195,8 @@ class FlexBox2(FlexItem2):
         for item in self.items:
             item.wrap(avail_width, avail_height)
 
-        if self.flex_wrap == FlexWrap2.Wrap2:
-            if self.flex_direction == FlexDirection2.Row2:
+        if self.flex_wrap == FlexWrap.Wrap:
+            if self.flex_direction == FlexDirection.Row2:
                 available, lengths = avail_width, widths(self.items)
             else:
                 available, lengths = avail_height, heights(self.items)
@@ -215,7 +215,7 @@ class FlexBox2(FlexItem2):
         else:
             self.rows = [FlexRow(self.items)]
 
-        if self.flex_direction == FlexDirection2.Row2:
+        if self.flex_direction == FlexDirection.Row2:
             for row in self.rows:
                 row.width, row.height = sum(widths(row)), max(heights(row))
 
@@ -229,10 +229,10 @@ class FlexBox2(FlexItem2):
         return content_width, content_height
 
     def draw_content(self, avail_width, avail_height, requested_width, requested_height):
-        if self.flex_direction == FlexDirection2.Row2:
+        if self.flex_direction == FlexDirection.Row2:
             row_heights = heights(self.rows)
-            if self.align_content == AlignContent2.Stretch:
-                row_heights = tuple(AlignContent2.Stretch.stretch(row_heights, avail_height))
+            if self.align_content == AlignContent.Stretch:
+                row_heights = tuple(AlignContent.Stretch.stretch(row_heights, avail_height))
 
             for row, y, row_height in zip(self.rows, self.align_content.points(row_heights, avail_height), row_heights):
                 y = avail_height - y
@@ -246,8 +246,8 @@ class FlexBox2(FlexItem2):
                     )
         else:
             col_widths = widths(self.rows)
-            if self.align_content == AlignContent2.Stretch:
-                col_widths = tuple(AlignContent2.Stretch.stretch(col_widths, avail_width))
+            if self.align_content == AlignContent.Stretch:
+                col_widths = tuple(AlignContent.Stretch.stretch(col_widths, avail_width))
             for col, x, col_width in zip(self.rows, self.align_content.points(col_widths, avail_width), col_widths):
                 for item, y in zip(col, self.justify_content.points(heights(col), avail_height)):
                     align_item = getattr(item, "align_self", None) or self.align_items
@@ -255,11 +255,11 @@ class FlexBox2(FlexItem2):
                                 avail_height - float(item.height) - y, )
 
 
-class FlexFlowable2(FlexItem2):
+class FlexFlowable(FlexItem):
     flowable = None
 
-    vertical_align = FortnumDescriptor("vertical_align", AlignItems2, default=AlignItems2.FlexCenter)
-    horizontal_align = FortnumDescriptor("horizontal_align", AlignItems2, default=AlignItems2.FlexCenter)
+    vertical_align = FortnumDescriptor("vertical_align", AlignItems, default=AlignItems.FlexCenter)
+    horizontal_align = FortnumDescriptor("horizontal_align", AlignItems, default=AlignItems.FlexCenter)
 
     def __init__(self, flowable, vertical_align=None, horizontal_align=None, **kwargs):
         super().__init__(**kwargs)
@@ -279,7 +279,7 @@ class FlexFlowable2(FlexItem2):
         )
 
 
-class FlexParagraph2(FlexFlowable2):
+class FlexParagraph2(FlexFlowable):
     def __init__(self, text, style, **kwargs):
         super().__init__(
             Paragraph(text, style),

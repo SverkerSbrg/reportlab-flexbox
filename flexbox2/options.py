@@ -1,7 +1,7 @@
 from fortnum.fortnum import Fortnum
 
 
-class FlexDirection2(Fortnum):
+class FlexDirection(Fortnum):
     class Row2(Fortnum):
         pass
 
@@ -9,7 +9,7 @@ class FlexDirection2(Fortnum):
         pass
 
 
-class FlexStart2(Fortnum):
+class FlexStart(Fortnum):
     @staticmethod
     def point(length, available):
         return 0
@@ -22,7 +22,7 @@ class FlexStart2(Fortnum):
             point += length
 
 
-class FlexEnd2(Fortnum):
+class FlexEnd(Fortnum):
     @staticmethod
     def point(length, available):
         return available - length
@@ -35,7 +35,7 @@ class FlexEnd2(Fortnum):
             point += length
 
 
-class FlexCenter2(Fortnum):
+class FlexCenter(Fortnum):
     @staticmethod
     def point(length, available):
         return (available - length)/2
@@ -48,7 +48,7 @@ class FlexCenter2(Fortnum):
             point += length
 
 
-class SpaceAround2(Fortnum):
+class SpaceAround(Fortnum):
     @staticmethod
     def points(lengths, available):
         total_space = (available - sum(lengths))
@@ -64,7 +64,7 @@ class SpaceAround2(Fortnum):
             point += length + space * 2
 
 
-class SpaceEvenly2(Fortnum):
+class SpaceEvenly(Fortnum):
     @staticmethod
     def points(lengths, available):
         total_space = (available - sum(lengths))
@@ -80,7 +80,7 @@ class SpaceEvenly2(Fortnum):
             point += length + space
 
 
-class SpaceBetween2(Fortnum):
+class SpaceBetween(Fortnum):
     @staticmethod
     def points(lengths, available):
         if len(lengths) == 1:
@@ -99,7 +99,7 @@ class SpaceBetween2(Fortnum):
                 point += length + space
 
 
-class Stretch2(FlexStart2):
+class Stretch(FlexStart):
     @staticmethod
     def stretch(lengths, available):
         space = max((available - sum(lengths))/len(lengths), 0)
@@ -107,37 +107,37 @@ class Stretch2(FlexStart2):
             yield length + space
 
 
-class AlignItems2(Fortnum):
-    FlexStart = FlexStart2
-    FlexEnd = FlexEnd2
-    FlexCenter = FlexCenter2
+class AlignItems(Fortnum):
+    FlexStart = FlexStart
+    FlexEnd = FlexEnd
+    FlexCenter = FlexCenter
 
 
-class AlignSelf2(Fortnum):
-    FlexStart = FlexStart2
-    FlexEnd = FlexEnd2
-    FlexCenter = FlexCenter2
+class AlignSelf(Fortnum):
+    FlexStart = FlexStart
+    FlexEnd = FlexEnd
+    FlexCenter = FlexCenter
 
 
-class JustifyContent2(Fortnum):
-    FlexStart = FlexStart2
-    FlexEnd = FlexEnd2
-    FlexCenter = FlexCenter2
-    SpaceAround = SpaceAround2
-    SpaceEvenly = SpaceEvenly2
-    SpaceBetween = SpaceBetween2
+class JustifyContent(Fortnum):
+    FlexStart = FlexStart
+    FlexEnd = FlexEnd
+    FlexCenter = FlexCenter
+    SpaceAround = SpaceAround
+    SpaceEvenly = SpaceEvenly
+    SpaceBetween = SpaceBetween
 
 
-class AlignContent2(Fortnum):
-    FlexStart = FlexStart2
-    FlexEnd = FlexEnd2
-    FlexCenter = FlexCenter2
-    SpaceAround = SpaceAround2
-    SpaceEvenly = SpaceEvenly2
-    SpaceBetween2 = SpaceBetween2
-    Stretch = Stretch2
+class AlignContent(Fortnum):
+    FlexStart = FlexStart
+    FlexEnd = FlexEnd
+    FlexCenter = FlexCenter
+    SpaceAround = SpaceAround
+    SpaceEvenly = SpaceEvenly
+    SpaceBetween2 = SpaceBetween
+    Stretch = Stretch
 
 
-class FlexWrap2(Fortnum):
-    NoWrap2 = Fortnum("NoWrap2")
-    Wrap2 = Fortnum("Wrap2")
+class FlexWrap(Fortnum):
+    NoWrap = Fortnum("NoWrap")
+    Wrap = Fortnum("Wrap")
