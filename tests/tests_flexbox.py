@@ -57,7 +57,7 @@ class FlexBoxTestCase(TestCase):
 
     def assertDrawItems(self, test_box, positions, top_left=True):
         width, height = test_box.wrap(test_box.avail_width, test_box.avail_height)
-        test_box.draw_content(test_box.width, test_box.height, test_box.content_width, test_box.content_height)
+        test_box.draw_content(float(test_box.width), float(test_box.height), test_box.content_width, test_box.content_height)
 
         i = 0
         for item, expected_position in zip_longest(test_box.items, positions):

@@ -67,8 +67,8 @@ class FlexItem(Flowable):
         self.margin.height_base = height or 0
         self.border.height_base = height or 0
 
-        frame_width = self.padding.width + self.margin.width + self.border.width
-        frame_height = self.padding.height + self.margin.height + self.border.height
+        frame_width = float(self.padding.width + self.margin.width + self.border.width)
+        frame_height = float(self.padding.height + self.margin.height + self.border.height)
 
         content_width, content_height = self.wrap_content(
             width - frame_width if width else avail_width,
@@ -131,19 +131,19 @@ class FlexItem(Flowable):
             float(self.margin.bottom)
         )
         self.draw_background(
-            self.width - self.margin.width,
-            self.height - self.margin.height
+            float(self.width) - float(self.margin.width),
+            float(self.height) - float(self.margin.height)
         )
         self.canv.restoreState()
 
         self.canv.saveState()
         self.canv.translate(
-            self.margin.left + self.padding.left + float(self.border.left),
-            self.margin.bottom + self.padding.bottom + float(self.border.bottom)
+            float(self.margin.left + self.padding.left + self.border.left),
+            float(self.margin.bottom + self.padding.bottom + self.border.bottom)
         )
         self.draw_content(
-            self.width - self.margin.width - self.padding.width - self.border.width,
-            self.height - self.margin.height - self.padding.height - self.border.height,
+            float(self.width) - float(self.margin.width + self.padding.width + self.border.width),
+            float(self.height) - float(self.margin.height + self.padding.height + self.border.height),
             self.content_width,
             self.content_height
         )

@@ -29,10 +29,33 @@ class FlexMeasurement:
         return float(self.static + self.relative * self.base)
 
     def __add__(self, other):
-        return self.__float__() + float(other)
+        if not isinstance(other, FlexMeasurement):
+            other = FlexMeasurement.parse(other)
+
+        if self._base != other._base:
+            raise ValueError(
+                "FlexMeasurements have different base values. If this is intended convert to float before adding"
+            )
+
+        result = FlexMeasurement(self.static + other.static, self.relative + other.relative)
+        result._base = self.base
+
+        return result
 
     def __sub__(self, other):
-        return self.__float__() - float(other)
+        if not isinstance(other, FlexMeasurement):
+            other = FlexMeasurement.parse(other)
+            other._base = self._base
+
+        if self._base != other._base:
+            raise ValueError(
+                "FlexMeasurements have different base values. If this is intended convert to float before adding"
+            )
+
+        result = FlexMeasurement(self.static - other.static, self.relative - other.relative)
+        result._base = self.base
+
+        return result
 
     def __bool__(self):
         return not (self._static is None and self._relative is None)
@@ -77,8 +100,11 @@ class FlexMeasurement:
         if isinstance(value, (int, float)):
             return FlexMeasurement(value, 0)
 
-        if isinstance(value, str) and "%" in value:
-            return FlexMeasurement(0, float(value.replace("%", "")) / 100)
+        if isinstance(value, str):
+            if "%" in value:
+                return FlexMeasurement(0, float(value.replace("%", "")) / 100)
+            else:
+                return FlexMeasurement(float(value), 0)
 
         raise Exception("Unable to parse measurement '%s'" % value)
 
