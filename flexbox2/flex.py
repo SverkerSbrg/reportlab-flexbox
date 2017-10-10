@@ -71,8 +71,8 @@ class FlexItem2(Flowable):
         frame_height = self.padding.height + self.margin.height + self.border.height
 
         content_width, content_height = self.wrap_content(
-            width - frame_width if width else 0,
-            height - frame_height if height else 0
+            width - frame_width if width else avail_width,
+            height - frame_height if height else avail_height
         )
 
         if width is None or height is None:

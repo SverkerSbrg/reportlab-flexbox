@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from flexbox.options import FlexStart
 from flexbox2.flex import FlexBox2, FlexItem2
+from flexbox2.measurement import FlexMeasurement2
 from flexbox2.options import FlexDirection2, FlexWrap2, JustifyContent2, AlignContent2, AlignItems2, Stretch2, \
     SpaceBetween2
 
@@ -103,6 +104,61 @@ class FlexBoxTestCase(TestCase):
         self.assertDrawItems(box, [(0, 0), (100, 0)])
 
 
+class DebugBox(TestBox):
+    def wrap(self, avail_width, avail_height):
+        print("DebugBox.wrap(%s, %s)" % (avail_width, avail_height))
+
+        for measurement in (self.min_width, self.width, self.max_width):
+            measurement.base = avail_width
+        for measurement in (self.min_height, self.height, self.max_height):
+            measurement.base = avail_height
+
+        width = FlexMeasurement2.max(self.width, self.min_width)
+        if width:
+            width = FlexMeasurement2.min(width, self.max_width)
+        height = FlexMeasurement2.max(self.height, self.min_height)
+        if height:
+            height = FlexMeasurement2.min(height, self.max_height)
+
+        print("   self", width, height)
+
+        self.padding.width_base = width or 0
+        self.margin.width_base = width or 0
+        self.border.width_base = width or 0
+
+        self.padding.height_base = height or 0
+        self.margin.height_base = height or 0
+        self.border.height_base = height or 0
+
+        frame_width = self.padding.width + self.margin.width + self.border.width
+        frame_height = self.padding.height + self.margin.height + self.border.height
+
+        content_width, content_height = self.wrap_content(
+            width - frame_width if width else avail_width,
+            height - frame_height if height else avail_height
+        )
+
+        print("    content", content_width, content_height)
+
+        if width is None or height is None:
+            if width is None:
+                width = FlexMeasurement2.min(content_width + frame_width)
+            if height is None:
+                height = FlexMeasurement2.min(content_height + frame_height)
+
+            content_width, content_height = self.wrap_content(width - frame_width, height - frame_height)
+
+        self.content_width = content_width
+        self.content_height = content_height
+
+        self.width = width
+        self.width.base = 0
+        self.height = height
+        self.height.base = 0
+
+        return width, height
+
+
 class FlexDirectionTestCase(FlexBoxTestCase):
     def test_row_no_wrap_single_item(self):
         box = TestBox(
@@ -180,8 +236,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             flex_direction=FlexDirection2.Row2,
             flex_wrap=FlexWrap2.Wrap2
         )
-        self.assertWrap(box, 40, 100)
-        self.assertRows(box, [1, 1, 1, 1, 1])
+        self.assertWrap(box, 200, 20)
+        self.assertRows(box, [5])
 
     def test_column_wrap(self):
         box = TestBox(
@@ -221,8 +277,8 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             flex_direction=FlexDirection2.Column2,
             flex_wrap=FlexWrap2.Wrap2
         )
-        self.assertWrap(box, 200, 20)
-        self.assertRows(box, [1, 1, 1, 1, 1])
+        self.assertWrap(box, 40, 100)
+        self.assertRows(box, [5,])
 
     def test_justify_content_flex_start_single(self):
         box = TestBox(
@@ -705,6 +761,16 @@ class FlexDirectionTestCase(FlexBoxTestCase):
             with self.assertRaises(ValueError):
                 box = TestBox()
                 setattr(box, attr, value)
+
+    def test_bug_auto_sizing_failing_when_child_uses_relative_measurements(self):
+        # Fixed
+        box = TestBox(
+            TestItem(width="100%", height=20),
+            avail_width=200,
+            avail_height=200
+        )
+        self.assertWrap(box, 200, 20)
+
 
 
 
