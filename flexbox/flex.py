@@ -2,8 +2,8 @@ from fortnum import FortnumDescriptor
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Flowable, Paragraph
 
-from flexbox2.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor
-from flexbox2.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap, Stretch
+from flexbox.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor
+from flexbox.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap, Stretch
 
 
 class FlexItem(Flowable):
@@ -279,7 +279,7 @@ class FlexFlowable(FlexItem):
         )
 
 
-class FlexParagraph2(FlexFlowable):
+class FlexParagraph(FlexFlowable):
     def __init__(self, text, style, **kwargs):
         super().__init__(
             Paragraph(text, style),

@@ -1,11 +1,10 @@
 from reportlab.platypus import KeepTogether
 
 from demo.common import DemoDocTemplate, h1, spacing, DemoFlexBox, DemoFlexItem, h2
-from flexbox2.flex import FlexParagraph2, FlexBox, FlexItem
-from flexbox2.options import AlignContent, JustifyContent, FlexDirection, FlexWrap, AlignItems
+from flexbox import FlexBox, FlexParagraph, FlexWrap, FlexDirection, JustifyContent, AlignItems, AlignContent
 
 wrap = FlexBox(
-    FlexParagraph2(str(FlexWrap.NoWrap), h2, padding=[spacing / 2, spacing / 2, 0]),
+    FlexParagraph(str(FlexWrap.NoWrap), h2, padding=[spacing / 2, spacing / 2, 0]),
     DemoFlexBox(
         DemoFlexItem(width="35%", height=25),
         DemoFlexItem(width="15%", height=25),
@@ -16,7 +15,7 @@ wrap = FlexBox(
         width="70%",
         flex_wrap=FlexWrap.NoWrap
     ),
-    FlexParagraph2(str(FlexWrap.Wrap), h2, padding=[spacing / 2, spacing / 2, 0]),
+    FlexParagraph(str(FlexWrap.Wrap), h2, padding=[spacing / 2, spacing / 2, 0]),
     DemoFlexBox(
         DemoFlexItem(width="35%", height=25),
         DemoFlexItem(width="15%", height=25),
@@ -34,7 +33,7 @@ wrap = FlexBox(
 
 justify_content = FlexBox(
     *list(FlexBox(
-            FlexParagraph2(str(justify_content), h2, padding=[spacing/2, spacing/2, 0]),
+            FlexParagraph(str(justify_content), h2, padding=[spacing / 2, spacing / 2, 0]),
             DemoFlexBox(
                 DemoFlexItem(width="30%", height=25),
                 DemoFlexItem(width="10%", height=25),
@@ -53,7 +52,7 @@ justify_content = FlexBox(
 
 align_items = FlexBox(
     *list(FlexBox(
-        FlexParagraph2(str(align_items), h2, padding=[spacing/2, spacing / 2, 0]),
+        FlexParagraph(str(align_items), h2, padding=[spacing / 2, spacing / 2, 0]),
         DemoFlexBox(
             DemoFlexItem(width="25%", height="100%"),
             DemoFlexItem(width="25%", height="35%"),
@@ -73,7 +72,7 @@ align_items = FlexBox(
 
 align_content = FlexBox(
     *list(FlexBox(
-        FlexParagraph2(str(align_content), h2, padding=[spacing/2, spacing / 2, 0]),
+        FlexParagraph(str(align_content), h2, padding=[spacing / 2, spacing / 2, 0]),
         DemoFlexBox(
             DemoFlexItem(width="25%", height=20),
             DemoFlexItem(width="50%", height=20),
@@ -102,15 +101,15 @@ if __name__ == "__main__":
     doc = DemoDocTemplate("options", timestamp=True)
     doc.build(
         flowables=[
-            FlexParagraph2("Wrap", h1, padding=(spacing*2, 0, 0)),
+            FlexParagraph("Wrap", h1, padding=(spacing * 2, 0, 0)),
             wrap,
-            FlexParagraph2("JustifyContent", h1, padding=(spacing*2, 0, 0)),
+            FlexParagraph("JustifyContent", h1, padding=(spacing * 2, 0, 0)),
             justify_content,
-            FlexParagraph2("AlignItems", h1, padding=(spacing*2, 0, 0)),
+            FlexParagraph("AlignItems", h1, padding=(spacing * 2, 0, 0)),
             align_items,
             KeepTogether(
                 flowables=[
-                    FlexParagraph2("AlignContent", h1, padding=(spacing * 2, 0, 0)),
+                    FlexParagraph("AlignContent", h1, padding=(spacing * 2, 0, 0)),
                     align_content,
                 ]
             )

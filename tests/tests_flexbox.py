@@ -1,10 +1,9 @@
 from itertools import zip_longest
 from unittest import TestCase
 
-from flexbox2.flex import FlexBox, FlexItem
-from flexbox2.measurement import FlexMeasurement
-from flexbox2.options import FlexDirection, FlexWrap, JustifyContent, AlignContent, AlignItems, Stretch, \
-    SpaceBetween, FlexStart
+from flexbox import FlexBox, FlexItem, FlexMeasurement, FlexDirection, FlexWrap, JustifyContent, AlignContent, \
+    AlignItems
+from flexbox.options import Stretch, SpaceBetween, FlexStart
 
 
 class TestBox(FlexBox):

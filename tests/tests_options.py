@@ -1,6 +1,6 @@
 import unittest
 
-from flexbox2.options import SpaceEvenly, SpaceBetween, FlexCenter, SpaceAround, FlexStart, FlexEnd
+from flexbox.options import FlexStart, FlexEnd, FlexCenter, SpaceAround, SpaceEvenly, SpaceBetween
 
 
 class OptionsTestCase(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from flexbox2.measurement import FlexFrame, FlexMeasurement
+from flexbox import FlexMeasurement, FlexFrame
 
 
 class FrameTestCase(unittest.TestCase):

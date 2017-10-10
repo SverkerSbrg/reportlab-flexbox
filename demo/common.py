@@ -6,7 +6,7 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import PageTemplate, BaseDocTemplate, Frame
 
-from flexbox2.flex import FlexItem, FlexBox, FlexParagraph2
+from flexbox.flex import FlexItem, FlexBox, FlexParagraph
 
 
 class DemoPage(PageTemplate):
