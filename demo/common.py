@@ -38,8 +38,8 @@ class DemoDocTemplate(BaseDocTemplate):
             pageTemplates=[DemoPage()]
         )
 
-item_color = HexColor(0xe77f24)
-container_color = HexColor(0x88499c)
+item_color = "#e77f24"
+container_color = "#88499c"
 spacing = 6
 
 h1 = ParagraphStyle("H1", fontSize=20, leading=20)

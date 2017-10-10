@@ -100,5 +100,5 @@ ENV/
 
 tests/*.pdf
 
-demo/options_*.pdf
+demo/options_demo_*.pdf
 .idea/

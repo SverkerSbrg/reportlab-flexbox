@@ -98,7 +98,7 @@ align_content = FlexBox(
 
 
 if __name__ == "__main__":
-    doc = DemoDocTemplate("options", timestamp=True)
+    doc = DemoDocTemplate("options_demo", timestamp=True)
     doc.build(
         flowables=[
             FlexParagraph("Wrap", h1, padding=(spacing * 2, 0, 0)),

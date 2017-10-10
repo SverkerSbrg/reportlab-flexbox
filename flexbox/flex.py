@@ -2,6 +2,7 @@ from fortnum import FortnumDescriptor
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Flowable, Paragraph
 
+from flexbox.color import ColorDescriptor
 from flexbox.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor
 from flexbox.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap, Stretch
 
@@ -15,8 +16,8 @@ class FlexItem(Flowable):
     height = FlexMeasurementDescriptor()
     max_height = FlexMeasurementDescriptor()
 
-    background_color = None
-    border_color = None
+    background_color = ColorDescriptor()
+    border_color = ColorDescriptor()
 
     margin = FlexFrameDescriptor()
     border = FlexFrameDescriptor()

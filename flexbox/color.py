@@ -1,18 +1,22 @@
 from weakref import WeakKeyDictionary
 
-from reportlab.lib.colors import HexColor
+from reportlab.lib.colors import HexColor, toColor
 
 
-class ColorDescriptor():
-    def __init__(self):
-        self._values = WeakKeyDictionary()
+class ColorDescriptor:
+    def __init__(self, default=None):
+        self.values = WeakKeyDictionary()
+        self.default = default
 
     def __set__(self, instance, value):
-        if isinstance(value, HexColor):
-            pass
-        elif isinstance(value, int):
-            value = HexColor(value)
-        elif isinstance(value, tuple) and len(value) == 3:
-            pass
+        if value is None:
+            if instance in self.values:
+                del self.values[instance]
+        else:
+            self.values[instance] = toColor(value)
 
-        self._values[instance] = value
+    def __get__(self, instance, owner):
+        try:
+            return self.values[instance]
+        except KeyError:
+            return self.default
