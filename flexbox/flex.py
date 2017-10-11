@@ -9,11 +9,11 @@ from flexbox.options import FlexDirection, JustifyContent, AlignItems, AlignCont
 
 class FlexItem(Flowable):
     min_width = FlexMeasurementDescriptor()
-    width = FlexMeasurementDescriptor()
+    flex_width = FlexMeasurementDescriptor()
     max_width = FlexMeasurementDescriptor()
     
     min_height = FlexMeasurementDescriptor()
-    height = FlexMeasurementDescriptor()
+    flex_height = FlexMeasurementDescriptor()
     max_height = FlexMeasurementDescriptor()
 
     background_color = ColorDescriptor()
@@ -28,11 +28,11 @@ class FlexItem(Flowable):
         super().__init__()
         
         self.min_width = min_width
-        self.width = width
+        self.flex_width = width
         self.max_width = max_width
         
         self.min_height = min_height
-        self.height = height
+        self.flex_height = height
         self.max_height = max_height
 
         self.margin = margin
@@ -48,49 +48,58 @@ class FlexItem(Flowable):
         self.align_self = align_self
 
     def wrap(self, avail_width, avail_height):
-        for measurement in (self.min_width, self.width, self.max_width):
+        for measurement in (self.min_width, self.flex_width, self.max_width):
             measurement.base = avail_width
-        for measurement in (self.min_height, self.height, self.max_height):
+        for measurement in (self.min_height, self.flex_height, self.max_height):
             measurement.base = avail_height
 
-        width = FlexMeasurement.max(self.width, self.min_width)
-        if width:
-            width = FlexMeasurement.min(width, self.max_width)
-        height = FlexMeasurement.max(self.height, self.min_height)
-        if height:
-            height = FlexMeasurement.min(height, self.max_height)
+        width = float(FlexMeasurement.min(self.max_width, self.flex_width) or avail_width)
+        height = float(FlexMeasurement.min(self.max_height, self.flex_height) or avail_height)
 
-        self.padding.width_base = width or 0
-        self.margin.width_base = width or 0
-        self.border.width_base = width or 0
-
-        self.padding.height_base = height or 0
-        self.margin.height_base = height or 0
-        self.border.height_base = height or 0
+        frames = (self.margin, self.border, self.padding)
+        for frame in frames:
+            frame.width_base = width
+            frame.height_base = height
 
         frame_width = float(self.padding.width + self.margin.width + self.border.width)
         frame_height = float(self.padding.height + self.margin.height + self.border.height)
 
         content_width, content_height = self.wrap_content(
-            width - frame_width if width else avail_width,
-            height - frame_height if height else avail_height
+            width - frame_width,
+            height - frame_height
         )
 
-        if width is None or height is None:
-            if width is None:
-                width = FlexMeasurement.min(content_width + frame_width)
-            if height is None:
-                height = FlexMeasurement.min(content_height + frame_height)
+        if not self.flex_width:
+            width_base = (content_width + sum(f.width.static for f in frames))/(1 - sum(f.height.relative for f in frames))
+            for frame in frames:
+                frame.width_base = width_base
 
-            content_width, content_height = self.wrap_content(width - frame_width, height - frame_height)
+            width = content_width + sum(float(f.width) for f in frames)
+        if not self.flex_height:
+            height_base = (content_height + sum(f.height.static for f in frames))/(1 - sum(f.height.relative for f in frames))
+            for frame in frames:
+                frame.height_base = height_base
 
-        self.content_width = content_width
-        self.content_height = content_height
+            height = content_height + sum(float(f.height) for f in frames)
+
+        if self.min_width:
+            width = max(width, float(self.min_width))
+        if self.max_width:
+            width = min(width, float(self.max_width))
+
+        if self.min_height:
+            height = max(height, float(self.min_height))
+        if self.max_height:
+            height = min(height, float(self.max_height))
+
+        for frame in frames:
+            frame.width_base = width
+            frame.height_base = height
 
         self.width = width
-        self.width.base = 0
         self.height = height
-        self.height.base = 0
+        self.content_width = content_width
+        self.content_height = content_height
 
         return width, height
 
@@ -132,8 +141,8 @@ class FlexItem(Flowable):
             float(self.margin.bottom)
         )
         self.draw_background(
-            float(self.width) - float(self.margin.width),
-            float(self.height) - float(self.margin.height)
+            self.width - float(self.margin.width),
+            self.height - float(self.margin.height)
         )
         self.canv.restoreState()
 
@@ -143,8 +152,8 @@ class FlexItem(Flowable):
             float(self.margin.bottom + self.padding.bottom + self.border.bottom)
         )
         self.draw_content(
-            float(self.width) - float(self.margin.width + self.padding.width + self.border.width),
-            float(self.height) - float(self.margin.height + self.padding.height + self.border.height),
+            self.width - float(self.margin.width + self.padding.width + self.border.width),
+            self.height - float(self.margin.height + self.padding.height + self.border.height),
             self.content_width,
             self.content_height
         )

@@ -769,6 +769,140 @@ class FlexDirectionTestCase(FlexBoxTestCase):
         )
         self.assertWrap(box, 200, 20)
 
+    def test_size_min_greedy_content(self):
+        box = TestBox(
+            TestItem(width="100%", height="100%"),
+            min_width=200,
+            min_height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 1000, 1000)
+
+    def test_size_min_small_fixed_content(self):
+        box = TestBox(
+            TestItem(width=100, height=50),
+            min_width=200,
+            min_height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 200, 100)
+
+    def test_size_min_large_fixed_content(self):
+        box = TestBox(
+            TestItem(width=400, height=200),
+            min_width=200,
+            min_height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 400, 200)
+
+    def test_size_base_greedy_content(self):
+        box = TestBox(
+            TestItem(width="100%", height="100%"),
+            width=200,
+            height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 200, 100)
+
+    def test_size_base_small_fix_content(self):
+        box = TestBox(
+            TestItem(width=100, height=50),
+            width=200,
+            height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 200, 100)
+
+    def test_size_base_large_fix_content(self):
+        box = TestBox(
+            TestItem(width=400, height=200),
+            width=200,
+            height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 200, 100)
+
+    def test_size_max_greedy_content(self):
+        box = TestBox(
+            TestItem(width="100%", height="100%"),
+            max_width=200,
+            max_height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 200, 100)
+
+    def test_size_max_small_fix_content(self):
+        box = TestBox(
+            TestItem(width=100, height=50),
+            max_width=200,
+            max_height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 100, 50)
+
+    def test_size_max_large_fix_content(self):
+        box = TestBox(
+            TestItem(width=400, height=200),
+            max_width=200,
+            max_height=100,
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 200, 100)
+
+    def test_max_and_base_limit(self):
+        box = TestBox(
+            width=100,
+            height=80,
+            max_width="50%",
+            max_height="50%",
+            avail_width=150,
+            avail_height=120
+        )
+        self.assertWrap(box, 75, 60)
+
+    def test_max_and_base_no_limit(self):
+        box = TestBox(
+            width=100,
+            height=80,
+            max_width="50%",
+            max_height="50%",
+            avail_width=1000,
+            avail_height=1000
+        )
+        self.assertWrap(box, 100, 80)
+
+    def test_min_and_base_limit(self):
+        box = TestBox(
+            width=100,
+            height=80,
+            min_width="50%",
+            min_height="50%",
+            avail_width=1000,
+            avail_height=500
+        )
+        self.assertWrap(box, 500, 250)
+
+    def test_min_and_base_no_limit(self):
+        box = TestBox(
+            width=100,
+            height=80,
+            min_width="50%",
+            min_height="50%",
+            avail_width=0,
+            avail_height=0
+        )
+        self.assertWrap(box, 100, 80)
+
 
 
 

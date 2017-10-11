@@ -139,6 +139,7 @@ class FlexMeasurementDescriptor:
         self.values[instance] = FlexMeasurement.parse(value)
 
 
+
 class FlexFrame:
     top = FlexMeasurementDescriptor()
     right = FlexMeasurementDescriptor()
