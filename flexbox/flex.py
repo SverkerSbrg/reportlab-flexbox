@@ -3,7 +3,7 @@ from reportlab.lib.colors import HexColor
 from reportlab.platypus import Flowable, Paragraph
 
 from flexbox.color import ColorDescriptor
-from flexbox.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor
+from flexbox.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor, FlexFrame
 from flexbox.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap, Stretch
 
 
@@ -11,7 +11,7 @@ class FlexItem(Flowable):
     min_width = FlexMeasurementDescriptor()
     flex_width = FlexMeasurementDescriptor()
     max_width = FlexMeasurementDescriptor()
-    
+
     min_height = FlexMeasurementDescriptor()
     flex_height = FlexMeasurementDescriptor()
     max_height = FlexMeasurementDescriptor()
@@ -22,15 +22,16 @@ class FlexItem(Flowable):
     margin = FlexFrameDescriptor()
     border = FlexFrameDescriptor()
     padding = FlexFrameDescriptor()
+    frame = FlexFrameDescriptor()
 
     def __init__(self, min_width=None, width=None, max_width=None, min_height=None, height=None, max_height=None,
                  margin=None, border=None, padding=None, background_color=None, border_color=None, align_self=None):
         super().__init__()
-        
+
         self.min_width = min_width
         self.flex_width = width
         self.max_width = max_width
-        
+
         self.min_height = min_height
         self.flex_height = height
         self.max_height = max_height
@@ -38,6 +39,12 @@ class FlexItem(Flowable):
         self.margin = margin
         self.border = border
         self.padding = padding
+        self.frame = FlexFrame(
+            self.margin.top + self.border.top + self.padding.top,
+            self.margin.right + self.border.right + self.padding.right,
+            self.margin.bottom + self.border.bottom + self.padding.bottom,
+            self.margin.left + self.border.left + self.padding.left
+        )
 
         self.background_color = background_color
         self.border_color = border_color
@@ -56,31 +63,24 @@ class FlexItem(Flowable):
         width = float(FlexMeasurement.min(self.max_width, self.flex_width) or avail_width)
         height = float(FlexMeasurement.min(self.max_height, self.flex_height) or avail_height)
 
-        frames = (self.margin, self.border, self.padding)
-        for frame in frames:
-            frame.width_base = width
-            frame.height_base = height
+        # frame_width = self.padding.width + self.margin.width + self.border.width
+        # frame_height = self.padding.height + self.margin.height + self.border.height
 
-        frame_width = float(self.padding.width + self.margin.width + self.border.width)
-        frame_height = float(self.padding.height + self.margin.height + self.border.height)
+        self.frame.width.base = width
+        self.frame.height.base = height
 
         content_width, content_height = self.wrap_content(
-            width - frame_width,
-            height - frame_height
+            width - float(self.frame.width),
+            height - float(self.frame.height)
         )
 
         if not self.flex_width:
-            width_base = (content_width + sum(f.width.static for f in frames))/(1 - sum(f.height.relative for f in frames))
-            for frame in frames:
-                frame.width_base = width_base
+            self.frame.width.base = (content_width + self.frame.width.static) / (1 - self.frame.width.relative)
+            width = content_width + float(self.frame.width)
 
-            width = content_width + sum(float(f.width) for f in frames)
         if not self.flex_height:
-            height_base = (content_height + sum(f.height.static for f in frames))/(1 - sum(f.height.relative for f in frames))
-            for frame in frames:
-                frame.height_base = height_base
-
-            height = content_height + sum(float(f.height) for f in frames)
+            self.frame.height.base = (content_height + self.frame.height.static) / (1 - self.frame.height.relative)
+            height = content_height + float(self.frame.height)
 
         if self.min_width:
             width = max(width, float(self.min_width))
@@ -92,9 +92,8 @@ class FlexItem(Flowable):
         if self.max_height:
             height = min(height, float(self.max_height))
 
-        for frame in frames:
-            frame.width_base = width
-            frame.height_base = height
+        self.frame.width.base = width
+        self.frame.height.base = height
 
         self.width = width
         self.height = height
@@ -116,23 +115,34 @@ class FlexItem(Flowable):
             self.canv.setFillColor(self.background_color)
 
             self.canv.rect(
-                bottom/2, left/2, background_width-right/2-left/2, background_height-top/2-bottom/2, stroke=False, fill=True
+                bottom / 2,
+                left / 2,
+                background_width - right / 2 - left / 2,
+                background_height - top / 2 - bottom / 2,
+                stroke=False,
+                fill=True
             )
+
+    def draw_border(self, background_width, background_height):
+        top = float(self.border.top)
+        right = float(self.border.right)
+        bottom = float(self.border.bottom)
+        left = float(self.border.left)
 
         self.canv.setStrokeColor(self.border_color or HexColor(0x000000))
 
         if top:
             self.canv.setLineWidth(top)
-            self.canv.line(0, background_height - top/2, background_width, background_height - top/2)
+            self.canv.line(0, background_height - top / 2, background_width, background_height - top / 2)
         if right:
             self.canv.setLineWidth(right)
-            self.canv.line(background_width - right/2, background_height, background_width - right/2, 0)
+            self.canv.line(background_width - right / 2, background_height, background_width - right / 2, 0)
         if bottom:
             self.canv.setLineWidth(bottom)
-            self.canv.line(background_width, bottom/2, 0, bottom/2)
+            self.canv.line(background_width, bottom / 2, 0, bottom / 2)
         if left:
             self.canv.setLineWidth(left)
-            self.canv.line(left/2, 0, left/2, background_height)
+            self.canv.line(left / 2, 0, left / 2, background_height)
 
     def draw(self):
         self.canv.saveState()
@@ -148,14 +158,25 @@ class FlexItem(Flowable):
 
         self.canv.saveState()
         self.canv.translate(
-            float(self.margin.left + self.padding.left + self.border.left),
-            float(self.margin.bottom + self.padding.bottom + self.border.bottom)
+            float(self.frame.left),
+            float(self.frame.bottom)
         )
         self.draw_content(
-            self.width - float(self.margin.width + self.padding.width + self.border.width),
-            self.height - float(self.margin.height + self.padding.height + self.border.height),
+            self.width - float(self.frame.width),
+            self.height - float(self.frame.height),
             self.content_width,
             self.content_height
+        )
+        self.canv.restoreState()
+
+        self.canv.saveState()
+        self.canv.translate(
+            float(self.margin.left),
+            float(self.margin.bottom)
+        )
+        self.draw_border(
+            self.width - float(self.margin.width),
+            self.height - float(self.margin.height)
         )
         self.canv.restoreState()
 
@@ -184,7 +205,7 @@ class FlexBox(FlexItem):
     flex_wrap = FortnumDescriptor("flex_wrap", FlexWrap, default=FlexWrap.NoWrap)
 
     def __init__(self, *flex_items, flex_direction=None, justify_content=None, align_content=None, align_items=None,
-                  flex_wrap=None, keep_together=None,  **kwargs):
+                 flex_wrap=None, keep_together=None, **kwargs):
 
         self.items = flex_items
         self.rows = None
@@ -197,6 +218,17 @@ class FlexBox(FlexItem):
         self.keep_together = keep_together if keep_together is not None else False
 
         super().__init__(**kwargs)
+
+        # Store kwargs for easy duplication in split method.
+        self.kwargs = kwargs
+        self.kwargs.update({
+            "flex_direction": flex_direction,
+            "justify_content": justify_content,
+            "align_content": align_content,
+            "align_items": align_items,
+            "flex_wrap": flex_wrap,
+            "keep_together": keep_together
+        })
 
     def wrap_content(self, avail_width, avail_height):
         if not self.items:
@@ -264,6 +296,39 @@ class FlexBox(FlexItem):
                     item.drawOn(self.canv, x + align_item.point(float(item.width), col_width),
                                 avail_height - float(item.height) - y, )
 
+    def split(self, avail_width, avail_height):
+        if self.keep_together:
+            return []
 
+        first = []
+        second = []
+        height = 0
+
+        if self.flex_direction == FlexDirection.Row2:
+            if len(self.rows) < 2:
+                return []
+
+            for row in self.rows:
+                height += row.height
+
+                l = first if height < avail_height else second
+                for item in row:
+                    l.append(item)
+
+        else:
+            if len(self.rows) > 1:
+                return []
+
+            for item in self.items:
+                height += item.height
+                (first if height < avail_height else second).append(item)
+
+        if not first and second:
+            return []
+
+        return [
+            FlexBox(*first, **self.kwargs),
+            FlexBox(*second, **self.kwargs)
+        ]
 
 

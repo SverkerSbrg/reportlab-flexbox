@@ -2,7 +2,6 @@ from datetime import datetime
 
 from os.path import dirname, join
 from reportlab.lib import pagesizes
-from reportlab.lib.colors import HexColor
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import PageTemplate, BaseDocTemplate, Frame
 

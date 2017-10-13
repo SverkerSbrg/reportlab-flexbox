@@ -1,4 +1,47 @@
+from itertools import chain
 from weakref import WeakKeyDictionary
+
+
+class CompoundFlexMeasurement:
+    def __init__(self, positive=None, negative=None):
+        self.positive = list(m for m in positive or [])
+        self.negative = list(m for m in negative or [])
+
+    def __float__(self):
+        return sum(float(m) for m in self.positive) - sum(float(m) for m in self.negative)
+
+    @property
+    def static(self):
+        return sum(m.static for m in self.positive) - sum(m.static for m in self.negative)
+
+    @property
+    def relative(self):
+        return sum(m.relative for m in self.positive) - sum(m.relative for m in self.negative)
+
+    @property
+    def base(self):
+        raise NotImplementedError()
+
+    @base.setter
+    def base(self, value):
+        for m in chain(self.positive, self.negative):
+            m.base = value
+
+    def __add__(self, other):
+        if isinstance(other, CompoundFlexMeasurement):
+            return CompoundFlexMeasurement(chain(self.positive, other.positive), chain(self.negative, other.negative))
+        if not isinstance(other, FlexMeasurement):
+            other = FlexMeasurement.parse(other)
+        return CompoundFlexMeasurement(chain(self.positive, [other]), self.negative)
+
+    def __sub__(self, other):
+        if isinstance(other, CompoundFlexMeasurement):
+            return CompoundFlexMeasurement(chain(self.positive, other.negative), chain(self.negative, other.positive))
+        if isinstance(other, FlexMeasurement):
+            return CompoundFlexMeasurement(chain(self.positive), chain(self.negative, [other]))
+
+    def __bool__(self):
+        return any(chain(self.positive, self.negative))
 
 
 class FlexMeasurement:
@@ -29,33 +72,17 @@ class FlexMeasurement:
         return float(self.static + self.relative * self.base)
 
     def __add__(self, other):
+        if isinstance(other, CompoundFlexMeasurement):
+            return CompoundFlexMeasurement(chain([self], other.positive), other.negative)
         if not isinstance(other, FlexMeasurement):
             other = FlexMeasurement.parse(other)
-
-        if self._base != other._base:
-            raise ValueError(
-                "FlexMeasurements have different base values. If this is intended convert to float before adding"
-            )
-
-        result = FlexMeasurement(self.static + other.static, self.relative + other.relative)
-        result._base = self.base
-
-        return result
+        return CompoundFlexMeasurement([self, other], [])
 
     def __sub__(self, other):
-        if not isinstance(other, FlexMeasurement):
-            other = FlexMeasurement.parse(other)
-            other._base = self._base
-
-        if self._base != other._base:
-            raise ValueError(
-                "FlexMeasurements have different base values. If this is intended convert to float before adding"
-            )
-
-        result = FlexMeasurement(self.static - other.static, self.relative - other.relative)
-        result._base = self.base
-
-        return result
+        if isinstance(other, CompoundFlexMeasurement):
+            return CompoundFlexMeasurement(other.negative, chain(other.positive, [self]))
+        if isinstance(other, FlexMeasurement):
+            return CompoundFlexMeasurement([self], [other])
 
     def __bool__(self):
         return not (self._static is None and self._relative is None)
@@ -63,12 +90,12 @@ class FlexMeasurement:
     def __eq__(self, other):
         if isinstance(other, FlexMeasurement):
             return (
-                self._static == other._static
-            ) and (
-                self._relative == other._relative
-            ) and (
-                self._base == other._base
-            )
+                       self._static == other._static
+                   ) and (
+                       self._relative == other._relative
+                   ) and (
+                       self._base == other._base
+                   )
         elif isinstance(other, float):
             return float(self) == other
         return False
@@ -77,7 +104,7 @@ class FlexMeasurement:
         args = []
 
         if self._static:
-            args.append(self.static)
+            args.append(str(self.static))
         if self._relative:
             args.append("%s%%" % self.relative)
 
@@ -91,7 +118,7 @@ class FlexMeasurement:
 
     @staticmethod
     def parse(value):
-        if issubclass(type(value), FlexMeasurement):
+        if issubclass(type(value), (FlexMeasurement, CompoundFlexMeasurement)):
             return value
 
         if value is None:
@@ -139,7 +166,6 @@ class FlexMeasurementDescriptor:
         self.values[instance] = FlexMeasurement.parse(value)
 
 
-
 class FlexFrame:
     top = FlexMeasurementDescriptor()
     right = FlexMeasurementDescriptor()
@@ -176,39 +202,42 @@ class FlexFrame:
             self.bottom = None
             self.left = None
 
-    @property
-    def width_base(self):
-        if self._width_base is None:
-            raise Exception("Base not set.")
-        return self._width_base
+        self.width = self.right + self.left
+        self.height = self.top + self.bottom
 
-    @width_base.setter
-    def width_base(self, value):
-        self._width_base = value
-
-        for measurement in (self.right, self.left):
-            measurement.base = value
-            
-    @property
-    def height_base(self):
-        if self._height_base is None:
-            raise Exception("Base not set.")
-        return self._height_base
-
-    @height_base.setter
-    def height_base(self, value):
-        self._height_base = value
-
-        for measurement in (self.top, self.bottom):
-            measurement.base = value
-
-    @property
-    def width(self):
-        return self.left + self.right
-
-    @property
-    def height(self):
-        return self.top + self.bottom
+        # @property
+        # def width_base(self):
+        #     if self._width_base is None:
+        #         raise Exception("Base not set.")
+        #     return self._width_base
+        #
+        # @width_base.setter
+        # def width_base(self, value):
+        #     self._width_base = value
+        #
+        #     for measurement in (self.right, self.left):
+        #         measurement.base = value
+        #
+        # @property
+        # def height_base(self):
+        #     if self._height_base is None:
+        #         raise Exception("Base not set.")
+        #     return self._height_base
+        #
+        # @height_base.setter
+        # def height_base(self, value):
+        #     self._height_base = value
+        #
+        #     for measurement in (self.top, self.bottom):
+        #         measurement.base = value
+        #
+        # @property
+        # def width(self):
+        #     return self.left + self.right
+        #
+        # @property
+        # def height(self):
+        #     return self.top + self.bottom
 
 
 class FlexFrameDescriptor:
@@ -222,9 +251,10 @@ class FlexFrameDescriptor:
         return self.values[instance]
 
     def __set__(self, instance, value):
-        if type(value) in (str, int, float, FlexMeasurement) or value is None:
-            frame = FlexFrame(value)
-        else:
-            frame = FlexFrame(*value)
+        if not isinstance(value, FlexFrame):
+            if type(value) in (str, int, float, FlexMeasurement, CompoundFlexMeasurement) or value is None:
+                value = FlexFrame(value)
+            else:
+                value = FlexFrame(*value)
 
-        self.values[instance] = frame
+        self.values[instance] = value
