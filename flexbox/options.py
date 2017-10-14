@@ -2,10 +2,10 @@ from fortnum.fortnum import Fortnum
 
 
 class FlexDirection(Fortnum):
-    class Row2(Fortnum):
+    class Row(Fortnum):
         pass
 
-    class Column2(Fortnum):
+    class Column(Fortnum):
         pass
 
 

@@ -1,10 +1,10 @@
 from fortnum import FortnumDescriptor
 from reportlab.lib.colors import HexColor
-from reportlab.platypus import Flowable, Paragraph
+from reportlab.platypus import Flowable
 
 from flexbox.color import ColorDescriptor
 from flexbox.measurement import FlexMeasurementDescriptor, FlexMeasurement, FlexFrameDescriptor, FlexFrame
-from flexbox.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap, Stretch
+from flexbox.options import FlexDirection, JustifyContent, AlignItems, AlignContent, FlexWrap
 
 
 class FlexItem(Flowable):
@@ -198,7 +198,7 @@ class FlexRow(list):
 
 
 class FlexBox(FlexItem):
-    flex_direction = FortnumDescriptor("flex_direction", FlexDirection, default=FlexDirection.Row2)
+    flex_direction = FortnumDescriptor("flex_direction", FlexDirection, default=FlexDirection.Row)
     justify_content = FortnumDescriptor("justify_content", JustifyContent, default=JustifyContent.FlexStart)
     align_items = FortnumDescriptor("align_items", AlignItems, default=AlignItems.FlexStart)
     align_content = FortnumDescriptor("align_content", AlignContent, default=AlignContent.Stretch)
@@ -238,7 +238,7 @@ class FlexBox(FlexItem):
             item.wrap(avail_width, avail_height)
 
         if self.flex_wrap == FlexWrap.Wrap:
-            if self.flex_direction == FlexDirection.Row2:
+            if self.flex_direction == FlexDirection.Row:
                 available, lengths = avail_width, widths(self.items)
             else:
                 available, lengths = avail_height, heights(self.items)
@@ -257,7 +257,7 @@ class FlexBox(FlexItem):
         else:
             self.rows = [FlexRow(self.items)]
 
-        if self.flex_direction == FlexDirection.Row2:
+        if self.flex_direction == FlexDirection.Row:
             for row in self.rows:
                 row.width, row.height = sum(widths(row)), max(heights(row))
 
@@ -271,7 +271,7 @@ class FlexBox(FlexItem):
         return content_width, content_height
 
     def draw_content(self, avail_width, avail_height, requested_width, requested_height):
-        if self.flex_direction == FlexDirection.Row2:
+        if self.flex_direction == FlexDirection.Row:
             row_heights = heights(self.rows)
             if self.align_content == AlignContent.Stretch:
                 row_heights = tuple(AlignContent.Stretch.stretch(row_heights, avail_height))
@@ -304,7 +304,7 @@ class FlexBox(FlexItem):
         second = []
         height = 0
 
-        if self.flex_direction == FlexDirection.Row2:
+        if self.flex_direction == FlexDirection.Row:
             if len(self.rows) < 2:
                 return []
 
@@ -327,8 +327,8 @@ class FlexBox(FlexItem):
             return []
 
         return [
-            FlexBox(*first, **self.kwargs),
-            FlexBox(*second, **self.kwargs)
+            self.__class__(*first, **self.kwargs),
+            self.__class__(*second, **self.kwargs)
         ]
 
 

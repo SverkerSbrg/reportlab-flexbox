@@ -30,7 +30,7 @@ wrap = FlexBox(
         width="70%",
         flex_wrap=FlexWrap.Wrap
     ),
-    flex_direction=FlexDirection.Column2,
+    flex_direction=FlexDirection.Column,
     width="100%",
     margin=(0, -spacing / 2)
 )
@@ -45,7 +45,7 @@ justify_content = FlexBox(
             width="100%",
             justify_content=justify_content
         ),
-        flex_direction=FlexDirection.Column2,
+        flex_direction=FlexDirection.Column,
         width="50%"
     ) for justify_content in JustifyContent
           ),
@@ -66,7 +66,7 @@ align_items = FlexBox(
             height=100,
             align_items=align_items
         ),
-        flex_direction=FlexDirection.Column2,
+        flex_direction=FlexDirection.Column,
         width="33.3%"
     ) for align_items in AlignItems),
     flex_wrap=FlexWrap.Wrap,
@@ -92,7 +92,7 @@ align_content = FlexBox(
             align_content=align_content,
             flex_wrap=FlexWrap.Wrap
         ),
-        flex_direction=FlexDirection.Column2,
+        flex_direction=FlexDirection.Column,
         width="33.3%"
     ) for align_content in AlignContent),
     flex_wrap=FlexWrap.Wrap,
@@ -132,7 +132,7 @@ class TankPlate(FlexBox):
             border=1,
             border_color="#000000",
             width="50%",
-            flex_direction=FlexDirection.Column2,
+            flex_direction=FlexDirection.Column,
             align_items=JustifyContent.FlexCenter
         )
 
