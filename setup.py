@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='reportlab-flexbox',
-    version='0.0.3',
+    version='0.0.4',
     description='FlexBox for reportlab',
     # long_description=io.open('README.rst', encoding='utf-8').read() + '\n\n' +
     #     io.open('HISTORY.rst', encoding='utf-8').read(),
